@@ -1,65 +1,69 @@
-import { Leaf, ShieldCheck, Zap } from "lucide-react";
-
 export function Hero() {
   return (
-    <section className="relative mx-auto w-full max-w-6xl px-6 pt-10 pb-16 md:px-10 md:pt-16">
-      <div className="absolute inset-0 -z-10 bg-topo opacity-80 pointer-events-none" />
+    <section className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-20 sm:pb-28">
+      <div className="grid grid-cols-12 gap-6 sm:gap-8">
+        <div className="col-span-12 md:col-span-8 rise">
+          <div className="mono text-[11px] tracking-[0.02em] text-ink-3">
+            A project for Earth Day, 2026
+          </div>
+          <h1 className="t-display mt-5 text-ink">
+            A diagnostic
+            <br />
+            for broken things.
+          </h1>
+          <p className="mt-7 max-w-[52ch] t-body text-ink-2">
+            Photograph the object. Describe the failure. In a few seconds
+            you get a verdict — repair, salvage, recycle, or replace —
+            with the steps, parts, cost, and the landfill you skip.
+          </p>
+          <div className="mt-10 flex items-center gap-6">
+            <a
+              href="#diagnose"
+              className="inline-flex items-center gap-2 bg-ink px-5 h-12 text-[15px] font-medium text-bg transition-colors hover:bg-forest cursor-pointer"
+            >
+              Begin diagnosis <span aria-hidden>→</span>
+            </a>
+            <a
+              href="#log"
+              className="inline-flex items-center gap-1.5 text-[15px] text-ink-2 underline-offset-4 hover:text-ink hover:underline decoration-1 transition-colors"
+            >
+              Read the log
+            </a>
+          </div>
+        </div>
 
-      <div className="mono inline-flex items-center gap-2 rounded-full border border-ink/15 bg-paper/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-ink-soft">
-        <Leaf className="h-3 w-3 text-leaf" />
-        Earth Day 2026 · Repair, don't replace
-      </div>
-
-      <h1 className="serif mt-6 max-w-4xl text-5xl leading-[1.05] text-ink md:text-[84px] md:leading-[0.97]">
-        Before you throw it away,
-        <span className="block italic text-leaf">ask the Oracle.</span>
-      </h1>
-
-      <p className="mt-6 max-w-2xl text-lg text-ink-soft md:text-xl">
-        Snap a photo of the broken thing. Tell us what's wrong. Repair Oracle
-        reads the image, diagnoses the failure, and returns a field-guide for
-        fixing, salvaging, or responsibly retiring it — in seconds.
-      </p>
-
-      <div className="mt-10 grid gap-3 sm:grid-cols-3 max-w-3xl">
-        <Feature
-          icon={<Zap className="h-4 w-4 text-leaf" />}
-          title="Photo-grounded"
-          body="Gemini Vision reads your item — not a generic search."
-        />
-        <Feature
-          icon={<ShieldCheck className="h-4 w-4 text-leaf" />}
-          title="Safety first"
-          body="Flags mains, lithium, and pro-only jobs up front."
-        />
-        <Feature
-          icon={<Leaf className="h-4 w-4 text-leaf" />}
-          title="Landfill math"
-          body="See exactly how much waste a repair keeps in circulation."
-        />
+        <aside className="col-span-12 md:col-span-4 md:border-l md:border-rule md:pl-8 md:pt-1">
+          <div className="mono text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
+            Contents
+          </div>
+          <ol className="mt-4 space-y-3">
+            <IndexItem n="01" label="Scan" note="upload a photograph" />
+            <IndexItem n="02" label="Diagnose" note="match failure mode" />
+            <IndexItem n="03" label="Verdict" note="repair · salvage · recycle · replace" />
+            <IndexItem n="04" label="Log" note="track landfill diverted" />
+          </ol>
+        </aside>
       </div>
     </section>
   );
 }
 
-function Feature({
-  icon,
-  title,
-  body,
+function IndexItem({
+  n,
+  label,
+  note,
 }: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
+  n: string;
+  label: string;
+  note: string;
 }) {
   return (
-    <div className="rounded-2xl border border-ink/10 bg-paper/80 px-4 py-3 backdrop-blur-sm">
-      <div className="flex items-center gap-2">
-        {icon}
-        <div className="mono text-[11px] uppercase tracking-[0.18em] text-ink-soft">
-          {title}
-        </div>
+    <li className="flex items-baseline gap-4">
+      <span className="mono text-[11px] text-ink-3 w-6 shrink-0">{n}</span>
+      <div className="flex-1">
+        <div className="text-[15px] font-medium text-ink">{label}</div>
+        <div className="t-small text-ink-3 mt-0.5">{note}</div>
       </div>
-      <div className="mt-1.5 text-[13px] text-ink-soft">{body}</div>
-    </div>
+    </li>
   );
 }
