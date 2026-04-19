@@ -1,17 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  Camera,
-  Upload,
-  X,
-  Loader2,
-  ArrowRight,
-  Sparkles,
-  CheckCircle2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Textarea, Label, Input } from "@/components/ui/input";
 import { CATEGORIES, type CategoryId, type Diagnosis } from "@/lib/diagnosis";
 import { cn } from "@/lib/utils";
@@ -19,12 +8,12 @@ import { cn } from "@/lib/utils";
 type Stage = "idle" | "analyzing" | "ready" | "error";
 
 const SCAN_STEPS = [
-  "Reading image context",
-  "Identifying item class",
-  "Cross-referencing failure modes",
-  "Scoring repair viability",
-  "Estimating parts & cost",
-  "Computing material recovery",
+  "reading image",
+  "classifying item",
+  "matching failure mode",
+  "scoring viability",
+  "estimating parts + cost",
+  "drafting verdict",
 ];
 
 export function UploadForm({
@@ -44,18 +33,26 @@ export function UploadForm({
   const [symptom, setSymptom] = React.useState("");
   const [stage, setStage] = React.useState<Stage>("idle");
   const [error, setError] = React.useState<string | null>(null);
-  const [scanIdx, setScanIdx] = React.useState(0);
   const [dragOver, setDragOver] = React.useState(false);
+  const [scanProgress, setScanProgress] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     if (stage !== "analyzing") return;
-    setScanIdx(0);
+    setScanProgress(1);
     const id = setInterval(() => {
-      setScanIdx((i) => (i + 1) % SCAN_STEPS.length);
-    }, 1100);
+      setScanProgress((i) => Math.min(SCAN_STEPS.length, i + 1));
+    }, 650);
     return () => clearInterval(id);
   }, [stage]);
+
+  React.useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(320, el.scrollHeight)}px`;
+  }, [symptom]);
 
   function handleFile(f: File | null) {
     if (!f) return;
@@ -69,8 +66,8 @@ export function UploadForm({
     }
     setError(null);
     setFile(f);
-    const url = URL.createObjectURL(f);
-    setPreview(url);
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview(URL.createObjectURL(f));
   }
 
   function clearFile() {
@@ -82,11 +79,11 @@ export function UploadForm({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) {
-      setError("Add a photo of the broken item first.");
+      setError("Add a photo first.");
       return;
     }
     if (symptom.trim().length < 4) {
-      setError("Tell us what's wrong — a sentence or two is enough.");
+      setError("Describe what's wrong in a sentence or two.");
       return;
     }
     setError(null);
@@ -106,7 +103,6 @@ export function UploadForm({
       }
       const { diagnosis } = (await res.json()) as { diagnosis: Diagnosis };
       setStage("ready");
-      // keep preview data for handoff
       const reader = new FileReader();
       reader.onload = () => {
         onResult({
@@ -124,11 +120,15 @@ export function UploadForm({
   }
 
   const canSubmit = file && symptom.trim().length >= 4 && stage !== "analyzing";
+  const charCount = symptom.length;
 
   return (
-    <form onSubmit={submit} className="grid gap-8 md:grid-cols-[1.05fr_1fr]">
-      {/* Left — image dropzone */}
-      <div className="relative">
+    <form
+      onSubmit={submit}
+      className="grid grid-cols-12 gap-6 sm:gap-8 md:gap-10"
+    >
+      {/* Image column */}
+      <div className="col-span-12 md:col-span-7">
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -141,9 +141,9 @@ export function UploadForm({
             handleFile(e.dataTransfer.files?.[0] ?? null);
           }}
           className={cn(
-            "relative aspect-[4/5] w-full overflow-hidden rounded-[28px] border border-ink/15 bg-bone-50 transition-all",
-            dragOver && "border-leaf ring-2 ring-leaf/30",
-            preview && "border-ink/20"
+            "relative aspect-[4/3] w-full border bg-bg-raised transition-colors duration-150",
+            preview ? "border-rule-strong" : "border-dashed border-rule-strong",
+            dragOver && "border-forest"
           )}
         >
           {preview ? (
@@ -154,71 +154,48 @@ export function UploadForm({
                 alt="Uploaded item"
                 className="h-full w-full object-cover"
               />
-              {stage === "analyzing" && (
-                <>
-                  <div className="absolute inset-0 bg-ink/20" />
-                  <div className="scan-line absolute inset-x-0 h-[30%] bg-gradient-to-b from-transparent via-lime/50 to-transparent pointer-events-none" />
-                  <div className="absolute inset-x-6 top-6 flex items-center gap-2 rounded-full bg-paper/95 px-4 py-2 text-sm">
-                    <Loader2 className="h-4 w-4 animate-spin text-moss" />
-                    <span className="text-ink-soft">Analyzing…</span>
-                  </div>
-                </>
-              )}
               {stage !== "analyzing" && (
                 <button
                   type="button"
                   onClick={clearFile}
-                  className="absolute right-4 top-4 inline-flex h-9 items-center gap-1.5 rounded-full bg-paper/95 px-3 text-sm text-ink-soft hover:bg-paper border border-ink/10"
+                  className="mono absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 border border-ink/20 bg-bg-raised/95 px-2 text-[11px] uppercase tracking-[0.08em] text-ink-2 transition-colors hover:text-ink hover:border-ink cursor-pointer"
                 >
-                  <X className="h-4 w-4" />
-                  Replace photo
+                  ✕ Replace
                 </button>
               )}
-
-              {/* Corner marks — field-guide feel */}
-              <CornerMarks />
             </>
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 p-10 text-center">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-leaf/25 pulse-ring" />
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-moss text-bone">
-                  <Camera className="h-7 w-7" />
-                </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8 text-center">
+              <div className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+                Photograph
               </div>
-              <div>
-                <div className="serif text-2xl text-ink">
-                  Add a photo of the broken item
-                </div>
-                <div className="mt-2 max-w-sm text-sm text-ink-soft">
-                  Drag & drop, or tap to upload. Good lighting, broken part in
-                  frame. HEIC, JPG, and PNG all work.
-                </div>
+              <div className="t-h3 text-ink">Add an image of the item.</div>
+              <div className="max-w-[46ch] t-small text-ink-3">
+                Drop a file here, or select one. Good lighting, broken part
+                in frame. JPG, PNG, HEIC.
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button
+              <div className="flex flex-wrap justify-center gap-3">
+                <button
                   type="button"
-                  variant="moss"
-                  size="md"
-                  onClick={() => inputRef.current?.click()}
+                  onClick={() => {
+                    inputRef.current?.removeAttribute("capture");
+                    inputRef.current?.click();
+                  }}
+                  className="inline-flex items-center gap-2 bg-ink px-4 h-10 text-sm font-medium text-bg transition-colors hover:bg-forest cursor-pointer"
                 >
-                  <Upload className="h-4 w-4" />
-                  Choose photo
-                </Button>
-                <Button
+                  Choose file
+                </button>
+                <button
                   type="button"
-                  variant="outline"
-                  size="md"
                   onClick={() => {
                     inputRef.current?.setAttribute("capture", "environment");
                     inputRef.current?.click();
                   }}
+                  className="inline-flex items-center gap-2 border border-rule-strong px-4 h-10 text-sm text-ink transition-colors hover:border-ink cursor-pointer"
                 >
-                  <Camera className="h-4 w-4" />
                   Use camera
-                </Button>
+                </button>
               </div>
-              <CornerMarks />
             </div>
           )}
           <input
@@ -230,72 +207,60 @@ export function UploadForm({
           />
         </div>
 
-        <AnimatePresence>
-          {stage === "analyzing" && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[92%] rounded-2xl border border-ink/10 bg-paper px-5 py-3 shadow-[0_30px_60px_-30px_rgba(17,23,20,0.35)]"
-            >
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-4 w-4 text-leaf" />
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={scanIdx}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-[15px] text-ink"
-                  >
-                    {SCAN_STEPS[scanIdx]}
-                  </motion.div>
-                </AnimatePresence>
-                <div className="ml-auto mono text-[11px] uppercase tracking-[0.18em] text-stone">
-                  Gemini Vision · 2.5
-                </div>
-              </div>
-            </motion.div>
+        {/* Filename + analyzing status strip */}
+        <div className="mt-4 min-h-[88px]">
+          {file && stage !== "analyzing" && (
+            <div className="mono flex items-baseline justify-between text-[11px] text-ink-3">
+              <span className="truncate pr-4">{file.name}</span>
+              <span className="shrink-0">{formatBytes(file.size)}</span>
+            </div>
           )}
-        </AnimatePresence>
+          {stage === "analyzing" && (
+            <ul className="mono text-[12px] leading-[1.7] text-ink-2">
+              {SCAN_STEPS.slice(0, scanProgress).map((step, i) => (
+                <li key={step} className="flex items-baseline gap-3">
+                  <span className="text-ink-3 w-3">▸</span>
+                  <span className="flex-1">{step}</span>
+                  {i < scanProgress - 1 ? (
+                    <span className="text-ink-3">done</span>
+                  ) : (
+                    <span className="text-ink-3">…</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
-      {/* Right — form */}
-      <div className="flex flex-col gap-6">
-        <div className="space-y-3">
-          <Label htmlFor="category">What is it?</Label>
-          <div className="grid grid-cols-2 gap-2">
+      {/* Form column */}
+      <div className="col-span-12 md:col-span-5 flex flex-col gap-7">
+        <fieldset className="flex flex-col gap-3">
+          <Label htmlFor="category">Category</Label>
+          <div className="flex flex-wrap gap-1.5">
             {CATEGORIES.map((c) => (
               <button
                 type="button"
                 key={c.id}
                 onClick={() => setCategory(c.id)}
                 className={cn(
-                  "group flex flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-all",
+                  "mono px-2.5 h-7 text-[11px] uppercase tracking-[0.05em] border transition-colors cursor-pointer",
                   category === c.id
-                    ? "border-moss bg-moss text-bone"
-                    : "border-ink/10 bg-paper text-ink hover:border-ink/25"
+                    ? "bg-ink text-bg border-ink"
+                    : "bg-transparent text-ink-2 border-rule-strong hover:text-ink hover:border-ink"
                 )}
               >
-                <div className="text-[13px] font-medium">{c.label}</div>
-                <div
-                  className={cn(
-                    "text-[11px]",
-                    category === c.id ? "text-bone/70" : "text-stone"
-                  )}
-                >
-                  {c.hint}
-                </div>
+                {c.label}
               </button>
             ))}
           </div>
-        </div>
+        </fieldset>
 
-        <div className="space-y-2">
-          <Label htmlFor="itemHint">Item name (optional)</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="itemHint">Item name — optional</Label>
           <Input
             id="itemHint"
+            variant="rule"
             placeholder="e.g. Breville BKE820 electric kettle"
             value={itemHint}
             onChange={(e) => setItemHint(e.target.value)}
@@ -303,55 +268,48 @@ export function UploadForm({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="symptom">What's wrong with it?</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="symptom">The failure</Label>
           <Textarea
             id="symptom"
-            placeholder="Describe the symptom. Example: Won't heat up anymore, light turns on but water stays cold."
-            rows={5}
+            ref={textareaRef}
+            variant="rule"
+            placeholder="Won't heat up anymore. Light turns on but water stays cold."
             value={symptom}
             onChange={(e) => setSymptom(e.target.value)}
             maxLength={1200}
+            rows={3}
           />
-          <div className="flex justify-between text-[11px] text-stone">
-            <span>Be specific about what works and what doesn't.</span>
-            <span>{symptom.length}/1200</span>
+          <div className="mono flex justify-between text-[10.5px] tracking-[0.02em] text-ink-3">
+            <span>Be specific. What works, what doesn&apos;t.</span>
+            <span>{charCount}/1200</span>
           </div>
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rust/30 bg-rust/5 px-4 py-3 text-sm text-rust">
+          <div className="mono border-l-2 border-v-replace pl-3 py-1.5 text-[12px] text-v-replace">
             {error}
           </div>
         )}
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <button
             type="submit"
-            variant="moss"
-            size="xl"
             disabled={!canSubmit}
-            className="w-full sm:w-auto"
+            className="inline-flex h-12 items-center justify-center gap-2 bg-ink px-5 text-[15px] font-medium text-bg transition-colors hover:bg-forest disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             {stage === "analyzing" ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Diagnosing…
-              </>
-            ) : stage === "ready" ? (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Ready
+                <Spinner /> Running diagnosis…
               </>
             ) : (
               <>
-                Diagnose the item
-                <ArrowRight className="h-4 w-4" />
+                Run diagnosis <span aria-hidden>→</span>
               </>
             )}
-          </Button>
-          <div className="text-[12px] text-stone">
-            Photo stays on-device until you submit. No account needed.
+          </button>
+          <div className="mono text-[10.5px] tracking-[0.02em] text-ink-3">
+            Photo never leaves until you submit.
           </div>
         </div>
       </div>
@@ -359,13 +317,23 @@ export function UploadForm({
   );
 }
 
-function CornerMarks() {
+function Spinner() {
   return (
-    <>
-      <span className="absolute left-3 top-3 h-4 w-4 border-l border-t border-ink/35" />
-      <span className="absolute right-3 top-3 h-4 w-4 border-r border-t border-ink/35" />
-      <span className="absolute left-3 bottom-3 h-4 w-4 border-l border-b border-ink/35" />
-      <span className="absolute right-3 bottom-3 h-4 w-4 border-r border-b border-ink/35" />
-    </>
+    <svg
+      viewBox="0 0 16 16"
+      className="h-4 w-4 animate-spin"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <circle cx="8" cy="8" r="6" opacity="0.25" />
+      <path d="M14 8a6 6 0 0 0-6-6" strokeLinecap="square" />
+    </svg>
   );
+}
+
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+  return `${(n / 1024 / 1024).toFixed(2)} MB`;
 }
