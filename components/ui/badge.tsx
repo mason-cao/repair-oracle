@@ -6,8 +6,8 @@ type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
 };
 
 const toneMap: Record<NonNullable<BadgeProps["tone"]>, string> = {
-  ink: "bg-ink text-bg",
-  forest: "bg-forest text-forest-ink",
+  ink: "bg-bg-contrast text-forest-ink",
+  forest: "bg-forest text-bg-contrast",
   repair: "border border-v-repair text-v-repair",
   salvage: "border border-v-salvage text-v-salvage",
   recycle: "border border-v-recycle text-v-recycle",

@@ -19,10 +19,38 @@ type Totals = {
 };
 
 const VERDICTS = [
-  { label: "Repair", icon: Wrench, color: "text-v-repair" },
-  { label: "Salvage", icon: Sparkles, color: "text-v-salvage" },
-  { label: "Recycle", icon: Recycle, color: "text-v-recycle" },
-  { label: "Replace", icon: Gauge, color: "text-v-replace" },
+  {
+    label: "Repair",
+    note: "High viability",
+    icon: Wrench,
+    color: "text-v-repair",
+    bar: "bg-v-repair",
+    width: "w-5/6",
+  },
+  {
+    label: "Salvage",
+    note: "Parts retained",
+    icon: Sparkles,
+    color: "text-v-salvage",
+    bar: "bg-v-salvage",
+    width: "w-3/5",
+  },
+  {
+    label: "Recycle",
+    note: "Material path",
+    icon: Recycle,
+    color: "text-v-recycle",
+    bar: "bg-v-recycle",
+    width: "w-2/5",
+  },
+  {
+    label: "Replace",
+    note: "Last resort",
+    icon: Gauge,
+    color: "text-v-replace",
+    bar: "bg-v-replace",
+    width: "w-1/4",
+  },
 ];
 
 export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
@@ -56,24 +84,25 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
       aria-labelledby="hero-heading"
       className="mx-auto flex min-h-[calc(100svh-64px)] w-full max-w-[1720px] px-5 pb-10 pt-8 sm:px-8 sm:pb-12 sm:pt-12 xl:px-10"
     >
-      <div className="grid w-full items-stretch gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-        <div className="flex min-h-[560px] flex-col justify-between py-3 sm:py-6 xl:min-h-[700px]">
+      <div className="grid w-full items-stretch gap-6 lg:grid-cols-[0.72fr_1.28fr] xl:gap-8">
+        <div className="command-panel flex min-h-[580px] flex-col justify-between p-5 sm:p-7 xl:min-h-[720px]">
           <div className="rise">
-            <div className="inline-flex items-center gap-2 rounded-md border border-rule bg-bg-raised px-3 py-2 text-sm font-medium text-forest">
+            <div className="inline-flex items-center gap-2 rounded-md border border-forest-ink/15 bg-forest-ink/10 px-3 py-2 text-sm font-semibold text-mint">
               <Leaf className="h-4 w-4" />
               Circular repair intelligence
             </div>
-            <h1 id="hero-heading" className="t-hero mt-7 max-w-[9ch] text-ink">
+            <h1 id="hero-heading" className="t-hero mt-7 max-w-[10ch]">
               Repair Oracle
             </h1>
-            <p className="mt-6 max-w-[42rem] text-lg leading-8 text-ink-2">
-              A refined diagnosis workspace for deciding what should be fixed,
-              parted out, recycled responsibly, or replaced with care.
+            <p className="mt-6 max-w-[44rem] text-lg leading-8 text-forest-ink/80">
+              Diagnose the useful life left inside a broken object. Repair,
+              salvage, recycle, or replace with a structured plan and a clear
+              material impact ledger.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
                 href="#diagnose"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-ink px-5 text-[15px] font-semibold text-bg transition-colors hover:bg-forest"
+                className="premium-button inline-flex h-12 items-center justify-center gap-2 px-5 text-[15px] font-semibold"
               >
                 <ScanLine className="h-4 w-4" />
                 Diagnose an item
@@ -81,9 +110,9 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
               </a>
               <a
                 href="#dispatch"
-                className="inline-flex h-12 items-center justify-center rounded-md border border-rule-strong bg-bg-raised px-5 text-[15px] font-semibold text-ink transition-colors hover:border-ink"
+                className="inline-flex h-12 items-center justify-center rounded-md border border-forest-ink/20 bg-forest-ink/10 px-5 text-[15px] font-semibold text-forest-ink hover:bg-forest-ink/15"
               >
-                View impact model
+                Operating model
               </a>
             </div>
           </div>
@@ -97,7 +126,7 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
             <LiveStat
               label="CO2e"
               value={totals ? totals.co2.toFixed(1) : "0.0"}
-              detail="kg saved"
+              detail="kg avoided"
             />
             <LiveStat
               label="Material"
@@ -107,17 +136,17 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
           </div>
         </div>
 
-        <div className="surface-panel min-h-[620px] overflow-hidden bg-bg-raised xl:min-h-[760px]">
-          <div className="flex items-center justify-between border-b border-rule px-4 py-3 sm:px-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-              <ScanLine className="h-4 w-4 text-forest" />
-              Live verdict console
+        <div className="console-shell min-h-[620px] xl:min-h-[760px]">
+          <div className="flex items-center justify-between border-b border-forest-ink/15 px-4 py-3 sm:px-5">
+            <div className="flex items-center gap-2 text-sm font-semibold text-forest-ink">
+              <ScanLine className="h-4 w-4 text-mint" />
+              Live Verdict Console
             </div>
-            <div className="rounded-sm bg-mint px-2 py-1 text-xs font-semibold text-forest">
-              Ready
+            <div className="rounded-sm border border-mint/25 bg-mint/10 px-2 py-1 text-xs font-semibold text-mint">
+              Engine ready
             </div>
           </div>
-          <RepairConsoleVisual />
+          <RepairConsoleVisual totals={totals} />
         </div>
       </div>
     </section>
@@ -134,117 +163,144 @@ function LiveStat({
   detail: string;
 }) {
   return (
-    <div className="surface-inset px-3 py-4 sm:px-4">
-      <div className="text-xs font-semibold uppercase text-ink-3">{label}</div>
-      <div className="mt-2 text-2xl font-semibold tabular-nums text-ink sm:text-3xl">
+    <div className="material-tile px-3 py-4 text-forest-ink sm:px-4">
+      <div className="text-xs font-semibold uppercase text-forest-ink/60">
+        {label}
+      </div>
+      <div className="mt-2 text-2xl font-semibold tabular-nums sm:text-3xl">
         {value}
       </div>
-      <div className="mt-1 text-xs text-ink-3">{detail}</div>
+      <div className="mt-1 text-xs text-forest-ink/60">{detail}</div>
     </div>
   );
 }
 
-function RepairConsoleVisual() {
+function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
   return (
-    <div className="grid min-h-[560px] grid-rows-[1fr_auto] bg-bg-raised xl:min-h-[700px]">
-      <div className="grid gap-0 md:grid-cols-[1fr_0.84fr]">
-        <div className="relative min-h-[330px] border-b border-rule bg-bg-deep md:border-b-0 md:border-r">
-          <div className="absolute inset-5 rounded-lg border border-ink/10 bg-bg-raised shadow-[0_24px_80px_rgba(16,23,20,0.12)]">
-            <div className="flex h-10 items-center gap-2 border-b border-rule px-3">
-              <span className="h-2.5 w-2.5 rounded-full bg-v-replace" />
-              <span className="h-2.5 w-2.5 rounded-full bg-v-salvage" />
-              <span className="h-2.5 w-2.5 rounded-full bg-v-repair" />
+    <div className="grid min-h-[560px] grid-rows-[1fr_auto] xl:min-h-[700px]">
+      <div className="grid gap-0 lg:grid-cols-[1.14fr_0.86fr]">
+        <div className="console-grid relative min-h-[390px] border-b border-forest-ink/15 bg-bg-contrast lg:border-b-0 lg:border-r">
+          <div className="scan-sweep absolute inset-x-0 top-0 h-36" />
+
+          <div className="absolute left-5 top-5 rounded-md border border-forest-ink/15 bg-forest-ink/10 px-3 py-2">
+            <div className="text-xs font-semibold uppercase text-forest-ink/50">
+              Intake signal
             </div>
-            <div className="grid h-[calc(100%-2.5rem)] grid-rows-[1fr_auto] p-4">
-              <div className="relative overflow-hidden rounded-md border border-rule bg-ink">
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,247,239,0.05)_1px,transparent_1px),linear-gradient(rgba(244,247,239,0.05)_1px,transparent_1px)] bg-[length:22px_22px]" />
-                <div className="scan-sweep absolute inset-x-0 top-0 h-28" />
-                <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-md border border-bg/30 bg-bg/10 p-3">
-                  <div className="h-full rounded-sm border border-bg/20 bg-bg/10 p-4">
-                    <Wrench className="h-10 w-10 text-mint" />
-                    <div className="mt-10 h-2 w-20 rounded-full bg-mint/70" />
-                    <div className="mt-3 h-2 w-14 rounded-full bg-bg/35" />
-                  </div>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 grid grid-cols-3 gap-2">
-                  <div className="h-1.5 rounded-full bg-v-repair" />
-                  <div className="h-1.5 rounded-full bg-v-salvage" />
-                  <div className="h-1.5 rounded-full bg-v-recycle" />
-                </div>
-                <div className="absolute right-4 top-4 grid gap-1.5">
-                  <span className="h-1.5 w-20 rounded-full bg-mint/70" />
-                  <span className="h-1.5 w-14 rounded-full bg-bg/30" />
-                </div>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <MiniMetric label="cost" value="$18" />
-                <MiniMetric label="time" value="42m" />
-                <MiniMetric label="CO2e" value="8.4kg" />
+            <div className="mt-1 text-sm font-semibold text-forest-ink">
+              Photo + failure note
+            </div>
+          </div>
+
+          <div className="absolute right-5 top-5 grid gap-1.5">
+            <span className="pulse-line h-1.5 w-28 rounded-full bg-mint" />
+            <span className="pulse-line h-1.5 w-20 rounded-full bg-clay [animation-delay:400ms]" />
+            <span className="pulse-line h-1.5 w-24 rounded-full bg-sky [animation-delay:800ms]" />
+          </div>
+
+          <div className="absolute inset-x-5 bottom-5 grid gap-3 sm:grid-cols-3">
+            <SignalCell label="Parts" value="Sourceable" />
+            <SignalCell label="Safety" value="Flagged" />
+            <SignalCell label="Impact" value="Estimated" />
+          </div>
+
+          <div className="absolute left-1/2 top-1/2 grid h-64 w-64 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-mint/25 bg-forest-ink/10 shadow-[0_0_80px_rgba(215,234,208,0.11)]">
+            <div className="grid h-48 w-48 place-items-center rounded-full border border-forest-ink/15 bg-bg-contrast/55">
+              <div className="grid h-28 w-28 place-items-center rounded-md border border-mint/20 bg-mint/10">
+                <Wrench className="h-12 w-12 text-mint" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col justify-between gap-6 p-5">
+        <div className="flex flex-col justify-between gap-5 p-5">
           <div>
-            <div className="text-sm font-semibold text-ink">Verdict set</div>
+            <div className="flex items-baseline justify-between gap-3">
+              <div className="text-sm font-semibold text-forest-ink">
+                Verdict matrix
+              </div>
+              <div className="text-xs font-semibold uppercase text-forest-ink/50">
+                Four outcomes
+              </div>
+            </div>
             <div className="mt-4 grid gap-3">
-              {VERDICTS.map(({ label, icon: Icon, color }) => (
+              {VERDICTS.map(({ label, note, icon: Icon, color, bar, width }) => (
                 <div
                   key={label}
-                  className="flex items-center justify-between rounded-md border border-rule bg-bg px-3 py-3"
+                  className="material-tile grid grid-cols-[auto_1fr] gap-3 p-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`h-4 w-4 ${color}`} />
-                    <span className="text-sm font-semibold text-ink">
-                      {label}
-                    </span>
+                  <Icon className={`mt-1 h-4 w-4 ${color}`} />
+                  <div>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-sm font-semibold text-forest-ink">
+                        {label}
+                      </span>
+                      <span className="text-xs text-forest-ink/55">{note}</span>
+                    </div>
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-forest-ink/10">
+                      <div className={`h-full rounded-full ${bar} ${width}`} />
+                    </div>
                   </div>
-                  <span className="h-2 w-16 rounded-full bg-rule-faint">
-                    <span
-                      className={`block h-full rounded-full ${
-                        label === "Repair"
-                          ? "w-5/6 bg-v-repair"
-                          : label === "Salvage"
-                            ? "w-3/5 bg-v-salvage"
-                            : label === "Recycle"
-                              ? "w-2/5 bg-v-recycle"
-                              : "w-1/4 bg-v-replace"
-                      }`}
-                    />
-                  </span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-md bg-forest p-4 text-forest-ink">
-            <div className="flex items-center gap-2 text-sm font-semibold">
+          <div className="material-tile p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-mint">
               <Leaf className="h-4 w-4" />
               Environmental ledger
             </div>
-            <p className="mt-3 text-sm leading-6 text-forest-ink/82">
-              Every diagnosis returns a practical repair path and a material
-              impact estimate you can act on.
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              <LedgerValue
+                label="Items"
+                value={totals ? totals.items.toString() : "0"}
+              />
+              <LedgerValue
+                label="CO2e"
+                value={totals ? totals.co2.toFixed(1) : "0.0"}
+              />
+              <LedgerValue
+                label="Diverted"
+                value={totals ? totals.diverted.toFixed(1) : "0.0"}
+              />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-forest-ink/65">
+              Impact is not a separate report card; it is part of the decision
+              model for every verdict.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 border-t border-rule">
-        <ConsoleCell label="Input" value="Photo + symptom" />
-        <ConsoleCell label="Model" value="Vision diagnosis" />
-        <ConsoleCell label="Output" value="Structured plan" />
+      <div className="grid grid-cols-3 border-t border-forest-ink/15">
+        <ConsoleCell label="Input" value="Image and symptom" />
+        <ConsoleCell label="Reasoning" value="Viability scoring" />
+        <ConsoleCell label="Output" value="Action plan" />
       </div>
     </div>
   );
 }
 
-function MiniMetric({ label, value }: { label: string; value: string }) {
+function SignalCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-rule bg-bg px-3 py-2">
-      <div className="text-[11px] uppercase text-ink-3">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-ink">{value}</div>
+    <div className="material-tile px-3 py-3">
+      <div className="text-xs font-semibold uppercase text-forest-ink/50">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-forest-ink">{value}</div>
+    </div>
+  );
+}
+
+function LedgerValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xl font-semibold tabular-nums text-forest-ink">
+        {value}
+      </div>
+      <div className="mt-1 text-xs font-semibold uppercase text-forest-ink/50">
+        {label}
+      </div>
     </div>
   );
 }
@@ -252,8 +308,10 @@ function MiniMetric({ label, value }: { label: string; value: string }) {
 function ConsoleCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-4 py-4">
-      <div className="text-[11px] uppercase text-ink-3">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-ink">{value}</div>
+      <div className="text-[11px] font-semibold uppercase text-forest-ink/45">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-forest-ink">{value}</div>
     </div>
   );
 }

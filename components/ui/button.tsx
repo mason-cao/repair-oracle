@@ -4,25 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber",
   {
     variants: {
       variant: {
         primary:
-          "bg-forest text-forest-ink hover:bg-ink",
+          "premium-button",
         secondary:
-          "bg-transparent text-ink border border-rule-strong hover:border-ink",
+          "premium-button-secondary",
         ghost:
-          "bg-transparent text-ink hover:bg-ink/5",
+          "bg-transparent text-ink hover:bg-bg-raised/70",
         link:
           "bg-transparent text-ink px-0 hover:underline underline-offset-4 decoration-1",
         /* Legacy aliases — kept through staged refactor, dropped at cleanup */
         outline:
           "bg-transparent text-ink border border-rule-strong hover:border-ink",
         moss:
-          "bg-forest text-forest-ink hover:bg-ink",
+          "bg-forest text-bg-contrast hover:bg-mint",
         amber:
-          "bg-amber text-bg hover:bg-ink",
+          "bg-amber text-bg-contrast hover:bg-mint",
       },
       size: {
         sm: "h-8 px-3 text-[13px]",
