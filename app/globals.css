@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette — Earth Day field-guide */
+  --color-bone: #f6f3ec;
+  --color-bone-50: #fbf9f4;
+  --color-bone-100: #f1ecdf;
+  --color-bone-200: #e4dcc6;
+  --color-ink: #111714;
+  --color-ink-soft: #2b3530;
+  --color-moss: #1f3b2d;
+  --color-moss-600: #244434;
+  --color-forest: #0e2a1d;
+  --color-leaf: #3f6b4c;
+  --color-leaf-soft: #6b9577;
+  --color-lime: #b9d674;
+  --color-amber: #c97d2a;
+  --color-amber-soft: #e6a25a;
+  --color-rust: #a8401f;
+  --color-clay: #d4a373;
+  --color-stone: #8a8577;
+  --color-stone-light: #c9c3b2;
+  --color-paper: #fdfcf7;
+
+  /* Semantic tokens */
+  --color-background: var(--color-bone);
+  --color-foreground: var(--color-ink);
+  --color-muted: var(--color-stone);
+  --color-card: var(--color-paper);
+  --color-border: rgba(17, 23, 20, 0.1);
+  --color-border-strong: rgba(17, 23, 20, 0.18);
+
+  /* Verdict colors */
+  --color-verdict-repair: #3f6b4c;
+  --color-verdict-salvage: #c97d2a;
+  --color-verdict-recycle: #4a6b8a;
+  --color-verdict-replace: #a8401f;
+
+  --font-sans: var(--font-sans-body);
+  --font-serif: var(--font-serif-display);
+  --font-mono: var(--font-mono-code);
+
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-bone);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans-body), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Paper grain — very subtle, uses CSS only */
+.bg-paper-grain {
+  background-color: var(--color-bone);
+  background-image:
+    radial-gradient(rgba(17, 23, 20, 0.035) 1px, transparent 1px),
+    radial-gradient(rgba(17, 23, 20, 0.025) 1px, transparent 1px);
+  background-size: 24px 24px, 8px 8px;
+  background-position: 0 0, 12px 12px;
+}
+
+.bg-topo {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(63, 107, 76, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(201, 125, 42, 0.1), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(31, 59, 45, 0.08), transparent 50%);
+}
+
+.serif {
+  font-family: var(--font-serif-display), ui-serif, Georgia, serif;
+  font-feature-settings: "ss01";
+  letter-spacing: -0.01em;
+}
+
+.mono {
+  font-family: var(--font-mono-code), ui-monospace, SFMono-Regular, monospace;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.scan-line {
+  animation: scan 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+::selection {
+  background: var(--color-leaf-soft);
+  color: var(--color-paper);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-leaf);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
