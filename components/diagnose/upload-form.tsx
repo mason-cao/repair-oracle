@@ -1,6 +1,14 @@
 "use client";
 
 import * as React from "react";
+import {
+  Camera,
+  ImagePlus,
+  LoaderCircle,
+  ScanLine,
+  Upload,
+  X,
+} from "lucide-react";
 import { Textarea, Label, Input } from "@/components/ui/input";
 import { CATEGORIES, type CategoryId, type Diagnosis } from "@/lib/diagnosis";
 import { cn } from "@/lib/utils";
@@ -8,12 +16,12 @@ import { cn } from "@/lib/utils";
 type Stage = "idle" | "analyzing" | "ready" | "error";
 
 const SCAN_STEPS = [
-  "reading image",
-  "classifying item",
-  "matching failure mode",
-  "scoring viability",
-  "estimating parts + cost",
-  "drafting verdict",
+  "Read image",
+  "Classify item",
+  "Match failure mode",
+  "Score repair viability",
+  "Estimate parts and cost",
+  "Draft verdict",
 ];
 
 export function UploadForm({
@@ -28,7 +36,8 @@ export function UploadForm({
 }) {
   const [file, setFile] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
-  const [category, setCategory] = React.useState<CategoryId>("small-appliance");
+  const [category, setCategory] =
+    React.useState<CategoryId>("small-appliance");
   const [itemHint, setItemHint] = React.useState("");
   const [symptom, setSymptom] = React.useState("");
   const [stage, setStage] = React.useState<Stage>("idle");
@@ -39,11 +48,16 @@ export function UploadForm({
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  React.useEffect(() => {
     if (stage !== "analyzing") return;
-    setScanProgress(1);
     const id = setInterval(() => {
       setScanProgress((i) => Math.min(SCAN_STEPS.length, i + 1));
-    }, 650);
+    }, 620);
     return () => clearInterval(id);
   }, [stage]);
 
@@ -57,7 +71,7 @@ export function UploadForm({
   function handleFile(f: File | null) {
     if (!f) return;
     if (!f.type.startsWith("image/")) {
-      setError("Please upload an image file (JPG, PNG, HEIC).");
+      setError("Please upload an image file.");
       return;
     }
     if (f.size > 8 * 1024 * 1024) {
@@ -83,10 +97,11 @@ export function UploadForm({
       return;
     }
     if (symptom.trim().length < 4) {
-      setError("Describe what's wrong in a sentence or two.");
+      setError("Describe what is wrong.");
       return;
     }
     setError(null);
+    setScanProgress(1);
     setStage("analyzing");
 
     const form = new FormData();
@@ -125,10 +140,17 @@ export function UploadForm({
   return (
     <form
       onSubmit={submit}
-      className="grid grid-cols-12 gap-6 sm:gap-8 md:gap-10"
+      className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6"
     >
-      {/* Image column */}
-      <div className="col-span-12 md:col-span-7">
+      <div className="surface-panel overflow-hidden">
+        <div className="flex items-center justify-between border-b border-rule px-4 py-3 sm:px-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <ImagePlus className="h-4 w-4 text-forest" />
+            Object photo
+          </div>
+          <span className="text-xs font-medium text-ink-3">JPG PNG HEIC</span>
+        </div>
+
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -141,9 +163,9 @@ export function UploadForm({
             handleFile(e.dataTransfer.files?.[0] ?? null);
           }}
           className={cn(
-            "relative aspect-[4/3] w-full border bg-bg-raised transition-colors duration-150",
-            preview ? "border-rule-strong" : "border-dashed border-rule-strong",
-            dragOver && "border-forest"
+            "relative aspect-[4/3] w-full bg-bg-deep transition-colors",
+            !preview && "border-0",
+            dragOver && "bg-mint"
           )}
         >
           {preview ? (
@@ -154,47 +176,79 @@ export function UploadForm({
                 alt="Uploaded item"
                 className="h-full w-full object-cover"
               />
-              {stage !== "analyzing" && (
-                <button
-                  type="button"
-                  onClick={clearFile}
-                  className="mono absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 border border-ink/20 bg-bg-raised/95 px-2 text-[11px] uppercase tracking-[0.08em] text-ink-2 transition-colors hover:text-ink hover:border-ink cursor-pointer"
-                >
-                  ✕ Replace
-                </button>
+              <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3">
+                <span className="rounded-md bg-bg-raised/92 px-3 py-2 text-xs font-semibold text-ink shadow-sm">
+                  {file?.name}
+                </span>
+                {stage !== "analyzing" && (
+                  <button
+                    type="button"
+                    onClick={clearFile}
+                    aria-label="Remove photo"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-ink text-bg transition-colors hover:bg-v-replace"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              {stage === "analyzing" && (
+                <div className="absolute inset-0 flex flex-col justify-end bg-ink/72 p-5 text-bg">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    Running diagnosis
+                  </div>
+                  <div className="mt-4 grid gap-2">
+                    {SCAN_STEPS.slice(0, scanProgress).map((step, i) => (
+                      <div
+                        key={step}
+                        className="flex items-center justify-between border-t border-bg/18 pt-2 text-sm"
+                      >
+                        <span>{step}</span>
+                        <span className="text-bg/68">
+                          {i < scanProgress - 1 ? "done" : "active"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </>
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8 text-center">
-              <div className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-                Photograph
-              </div>
-              <div className="t-h3 text-ink">Add an image of the item.</div>
-              <div className="max-w-[46ch] t-small text-ink-3">
-                Drop a file here, or select one. Good lighting, broken part
-                in frame. JPG, PNG, HEIC.
-              </div>
-              <div className="flex flex-wrap justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    inputRef.current?.removeAttribute("capture");
-                    inputRef.current?.click();
-                  }}
-                  className="inline-flex items-center gap-2 bg-ink px-4 h-10 text-sm font-medium text-bg transition-colors hover:bg-forest cursor-pointer"
-                >
-                  Choose file
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    inputRef.current?.setAttribute("capture", "environment");
-                    inputRef.current?.click();
-                  }}
-                  className="inline-flex items-center gap-2 border border-rule-strong px-4 h-10 text-sm text-ink transition-colors hover:border-ink cursor-pointer"
-                >
-                  Use camera
-                </button>
+            <div className="absolute inset-0 grid place-items-center p-5">
+              <div className="max-w-[28rem] text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-forest text-forest-ink">
+                  <Upload className="h-6 w-6" />
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-ink">
+                  Add the broken object.
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-ink-2">
+                  Keep the failure point visible and avoid heavy shadows.
+                </p>
+                <div className="mt-6 flex flex-wrap justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      inputRef.current?.removeAttribute("capture");
+                      inputRef.current?.click();
+                    }}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-ink px-4 text-sm font-semibold text-bg transition-colors hover:bg-forest"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Choose file
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      inputRef.current?.setAttribute("capture", "environment");
+                      inputRef.current?.click();
+                    }}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-bg-raised px-4 text-sm font-semibold text-ink transition-colors hover:border-ink"
+                  >
+                    <Camera className="h-4 w-4" />
+                    Camera
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -207,109 +261,106 @@ export function UploadForm({
           />
         </div>
 
-        {/* Filename + analyzing status strip */}
-        <div className="mt-4 min-h-[88px]">
-          {file && stage !== "analyzing" && (
-            <div className="mono flex items-baseline justify-between text-[11px] text-ink-3">
-              <span className="truncate pr-4">{file.name}</span>
-              <span className="shrink-0">{formatBytes(file.size)}</span>
-            </div>
-          )}
-          {stage === "analyzing" && (
-            <ul className="mono text-[12px] leading-[1.7] text-ink-2">
-              {SCAN_STEPS.slice(0, scanProgress).map((step, i) => (
-                <li key={step} className="flex items-baseline gap-3">
-                  <span className="text-ink-3 w-3">▸</span>
-                  <span className="flex-1">{step}</span>
-                  {i < scanProgress - 1 ? (
-                    <span className="text-ink-3">done</span>
-                  ) : (
-                    <span className="text-ink-3">…</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="grid grid-cols-3 border-t border-rule">
+          <StatusCell label="File" value={file ? formatBytes(file.size) : "None"} />
+          <StatusCell label="Privacy" value="Submit only" />
+          <StatusCell label="Limit" value="8MB" />
         </div>
       </div>
 
-      {/* Form column */}
-      <div className="col-span-12 md:col-span-5 flex flex-col gap-7">
-        <fieldset className="flex flex-col gap-3">
-          <Label htmlFor="category">Category</Label>
-          <div className="flex flex-wrap gap-1.5">
-            {CATEGORIES.map((c) => (
-              <button
-                type="button"
-                key={c.id}
-                onClick={() => setCategory(c.id)}
-                className={cn(
-                  "mono px-2.5 h-7 text-[11px] uppercase tracking-[0.05em] border transition-colors cursor-pointer",
-                  category === c.id
-                    ? "bg-ink text-bg border-ink"
-                    : "bg-transparent text-ink-2 border-rule-strong hover:text-ink hover:border-ink"
-                )}
-              >
-                {c.label}
-              </button>
-            ))}
+      <div className="surface-panel p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <ScanLine className="h-4 w-4 text-forest" />
+              Object details
+            </div>
+            <p className="mt-2 text-sm leading-6 text-ink-3">
+              Specific symptoms produce better parts, cost, and safety calls.
+            </p>
           </div>
-        </fieldset>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="itemHint">Item name — optional</Label>
-          <Input
-            id="itemHint"
-            variant="rule"
-            placeholder="e.g. Breville BKE820 electric kettle"
-            value={itemHint}
-            onChange={(e) => setItemHint(e.target.value)}
-            maxLength={120}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="symptom">The failure</Label>
-          <Textarea
-            id="symptom"
-            ref={textareaRef}
-            variant="rule"
-            placeholder="Won't heat up anymore. Light turns on but water stays cold."
-            value={symptom}
-            onChange={(e) => setSymptom(e.target.value)}
-            maxLength={1200}
-            rows={3}
-          />
-          <div className="mono flex justify-between text-[10.5px] tracking-[0.02em] text-ink-3">
-            <span>Be specific. What works, what doesn&apos;t.</span>
-            <span>{charCount}/1200</span>
+          <div className="rounded-sm bg-bg px-2 py-1 text-xs font-semibold text-ink-3">
+            {stage.toUpperCase()}
           </div>
         </div>
 
-        {error && (
-          <div className="mono border-l-2 border-v-replace pl-3 py-1.5 text-[12px] text-v-replace">
-            {error}
-          </div>
-        )}
+        <div className="mt-6 grid gap-6">
+          <fieldset className="grid gap-3">
+            <Label htmlFor="category">Category</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  type="button"
+                  key={c.id}
+                  onClick={() => setCategory(c.id)}
+                  className={cn(
+                    "min-h-11 rounded-md border px-3 py-2 text-left text-sm font-semibold transition-colors",
+                    category === c.id
+                      ? "border-forest bg-mint text-forest"
+                      : "border-rule bg-bg text-ink-2 hover:border-rule-strong hover:text-ink"
+                  )}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
 
-        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="inline-flex h-12 items-center justify-center gap-2 bg-ink px-5 text-[15px] font-medium text-bg transition-colors hover:bg-forest disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {stage === "analyzing" ? (
-              <>
-                <Spinner /> Running diagnosis…
-              </>
-            ) : (
-              <>
-                Run diagnosis <span aria-hidden>→</span>
-              </>
-            )}
-          </button>
-          <div className="mono text-[10.5px] tracking-[0.02em] text-ink-3">
-            Photo never leaves until you submit.
+          <div className="grid gap-2">
+            <Label htmlFor="itemHint">Item name, optional</Label>
+            <Input
+              id="itemHint"
+              variant="bordered"
+              placeholder="Breville BKE820 electric kettle"
+              value={itemHint}
+              onChange={(e) => setItemHint(e.target.value)}
+              maxLength={120}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="symptom">Failure note</Label>
+            <Textarea
+              id="symptom"
+              ref={textareaRef}
+              variant="bordered"
+              placeholder="Light turns on, but the water stays cold."
+              value={symptom}
+              onChange={(e) => setSymptom(e.target.value)}
+              maxLength={1200}
+              rows={4}
+            />
+            <div className="flex justify-between gap-4 text-xs text-ink-3">
+              <span>What works, what changed, what you already tried.</span>
+              <span>{charCount}/1200</span>
+            </div>
+          </div>
+
+          {error && (
+            <div className="rounded-md border border-v-replace/30 bg-v-replace/10 px-3 py-2 text-sm font-medium text-v-replace">
+              {error}
+            </div>
+          )}
+
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-ink px-5 text-[15px] font-semibold text-bg transition-colors hover:bg-forest disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {stage === "analyzing" ? (
+                <>
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  Analyzing
+                </>
+              ) : (
+                <>
+                  <ScanLine className="h-4 w-4" />
+                  Run diagnosis
+                </>
+              )}
+            </button>
+            <span className="text-sm text-ink-3">No account required.</span>
           </div>
         </div>
       </div>
@@ -317,18 +368,14 @@ export function UploadForm({
   );
 }
 
-function Spinner() {
+function StatusCell({ label, value }: { label: string; value: string }) {
   return (
-    <svg
-      viewBox="0 0 16 16"
-      className="h-4 w-4 animate-spin"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <circle cx="8" cy="8" r="6" opacity="0.25" />
-      <path d="M14 8a6 6 0 0 0-6-6" strokeLinecap="square" />
-    </svg>
+    <div className="px-4 py-3">
+      <div className="text-[11px] font-semibold uppercase text-ink-3">
+        {label}
+      </div>
+      <div className="mt-1 truncate text-sm font-semibold text-ink">{value}</div>
+    </div>
   );
 }
 

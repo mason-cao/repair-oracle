@@ -10,11 +10,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     <input
       ref={ref}
       className={cn(
-        "w-full text-[15px] text-ink placeholder:text-ink-3 focus:outline-none transition-colors duration-150",
+        "w-full rounded-md text-[15px] text-ink placeholder:text-ink-3 focus:outline-none transition-colors duration-150",
         variant === "bordered" &&
-          "h-10 border border-rule-strong bg-bg-raised px-3 focus:border-ink",
+          "h-11 border border-rule bg-bg px-3 focus:border-ink",
         variant === "rule" &&
-          "h-10 bg-transparent border-b border-rule-strong px-0 focus:border-ink",
+          "h-11 rounded-none bg-transparent border-b border-rule-strong px-0 focus:border-ink",
         className
       )}
       {...props}
@@ -32,11 +32,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     <textarea
       ref={ref}
       className={cn(
-        "w-full text-[15px] text-ink placeholder:text-ink-3 focus:outline-none resize-none transition-colors duration-150",
+        "w-full rounded-md text-[15px] text-ink placeholder:text-ink-3 focus:outline-none resize-none transition-colors duration-150",
         variant === "bordered" &&
-          "min-h-[96px] border border-rule-strong bg-bg-raised px-3 py-2.5 focus:border-ink",
+          "min-h-[112px] border border-rule bg-bg px-3 py-3 focus:border-ink",
         variant === "rule" &&
-          "min-h-[96px] bg-transparent border-b border-rule-strong px-0 py-2 focus:border-ink",
+          "min-h-[112px] rounded-none bg-transparent border-b border-rule-strong px-0 py-2 focus:border-ink",
         className
       )}
       {...props}
@@ -51,7 +51,7 @@ export const Label = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <label
     ref={ref}
-    className={cn("mono text-[11px] tracking-[0.02em] text-ink-3", className)}
+    className={cn("text-xs font-semibold uppercase text-ink-3", className)}
     {...props}
   />
 ));

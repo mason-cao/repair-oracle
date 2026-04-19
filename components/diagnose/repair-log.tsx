@@ -2,6 +2,15 @@
 
 import * as React from "react";
 import {
+  AlertTriangle,
+  History,
+  Leaf,
+  Recycle,
+  ShieldCheck,
+  Trash2,
+  Wrench,
+} from "lucide-react";
+import {
   clearHistory,
   loadHistory,
   removeHistory,
@@ -17,11 +26,22 @@ const VERDICT_LABEL_SHORT: Record<Verdict, string> = {
   replace: "Replace",
 };
 
-const VERDICT_COLOR: Record<Verdict, string> = {
-  repair: "text-v-repair",
-  salvage: "text-v-salvage",
-  recycle: "text-v-recycle",
-  replace: "text-v-replace",
+const VERDICT_TONE: Record<
+  Verdict,
+  { color: string; bg: string; icon: React.ComponentType<{ className?: string }> }
+> = {
+  repair: { color: "text-v-repair", bg: "bg-v-repair/10", icon: Wrench },
+  salvage: {
+    color: "text-v-salvage",
+    bg: "bg-v-salvage/10",
+    icon: ShieldCheck,
+  },
+  recycle: { color: "text-v-recycle", bg: "bg-v-recycle/10", icon: Recycle },
+  replace: {
+    color: "text-v-replace",
+    bg: "bg-v-replace/10",
+    icon: AlertTriangle,
+  },
 };
 
 export function RepairLog({ refreshKey }: { refreshKey: number }) {
@@ -29,8 +49,15 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setEntries(loadHistory());
-    setMounted(true);
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      setEntries(loadHistory());
+      setMounted(true);
+    });
+    return () => {
+      active = false;
+    };
   }, [refreshKey]);
 
   if (!mounted) return null;
@@ -48,23 +75,54 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
     <section
       id="log"
       aria-labelledby="log-heading"
-      className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28"
+      className="mx-auto w-full max-w-[1280px] px-5 py-16 sm:px-8 sm:py-24"
     >
-      <div className="rule-t pt-10">
-        <div className="flex items-baseline justify-between gap-6">
+      <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.76fr_1.24fr]">
+        <div>
+          <div className="inline-flex items-center gap-2 text-sm font-semibold uppercase text-forest">
+            <History className="h-4 w-4" />
+            Repair log
+          </div>
+          <h2 id="log-heading" className="t-h1 mt-4 text-ink">
+            Every verdict, remembered.
+          </h2>
+          <p className="mt-4 max-w-[34rem] text-base leading-7 text-ink-2">
+            Diagnoses stay on this device so the demo can show cumulative
+            material impact without accounts or a backend.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Total label="Items" value={entries.length.toString()} />
+          <Total label="CO2e saved" value={`${totalCo2.toFixed(1)} kg`} />
+          <Total
+            label="Material diverted"
+            value={`${totalLandfill.toFixed(1)} kg`}
+          />
+        </div>
+      </div>
+
+      {entries.length === 0 ? (
+        <div className="surface-panel mt-8 grid min-h-[260px] place-items-center p-6 text-center">
           <div>
-            <div className="mono text-[11px] tracking-[0.02em] text-ink-3">
-              <span className="text-ink-2">§ 02</span> · Log
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-mint text-forest">
+              <Leaf className="h-6 w-6" />
             </div>
-            <h2 id="log-heading" className="t-h1 mt-3 text-ink">
-              Every repair, remembered.
-            </h2>
-            <p className="mt-4 max-w-[58ch] t-body text-ink-2">
-              Past diagnoses stay on this device. Resume a repair, or watch
-              the landfill you&apos;ve skipped grow.
+            <h3 className="mt-5 text-xl font-semibold text-ink">
+              No diagnoses yet.
+            </h3>
+            <p className="mt-3 max-w-[28rem] text-sm leading-6 text-ink-3">
+              Run the workspace above and your repair decisions will appear
+              here.
             </p>
           </div>
-          {entries.length > 0 && (
+        </div>
+      ) : (
+        <div className="surface-panel mt-8 overflow-hidden">
+          <div className="flex items-center justify-between gap-4 border-b border-rule px-4 py-3 sm:px-5">
+            <div className="text-sm font-semibold text-ink">
+              Saved diagnoses
+            </div>
             <button
               onClick={() => {
                 if (confirm("Clear your entire repair log?")) {
@@ -72,83 +130,44 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
                   setEntries([]);
                 }
               }}
-              className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3 transition-colors hover:text-v-replace cursor-pointer"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-rule bg-bg px-3 text-sm font-semibold text-ink-2 transition-colors hover:border-v-replace hover:text-v-replace"
             >
-              Clear log
+              <Trash2 className="h-4 w-4" />
+              Clear
             </button>
-          )}
-        </div>
-
-        {entries.length === 0 ? (
-          <div className="mt-16 border border-rule py-20 text-center">
-            <div className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-              Empty
-            </div>
-            <div className="t-h3 mt-3 text-ink-2">
-              Diagnose a broken thing above to start your log.
-            </div>
           </div>
-        ) : (
-          <>
-            {/* Totals row */}
-            <div className="mt-10 grid grid-cols-3 rule-t rule-b">
-              <Total label="Items" value={entries.length.toString()} />
-              <Total
-                label="CO₂e saved"
-                value={`${totalCo2.toFixed(1)} kg`}
-                borderL
-              />
-              <Total
-                label="Diverted"
-                value={`${totalLandfill.toFixed(1)} kg`}
-                borderL
-              />
-            </div>
 
-            {/* Table */}
-            <div className="mt-10">
-              <div className="mono hidden sm:grid grid-cols-[88px_1fr_180px_140px_40px] items-baseline gap-4 pb-3 text-[10.5px] uppercase tracking-[0.08em] text-ink-3 rule-b">
-                <span>Date</span>
-                <span>Item</span>
-                <span>Verdict</span>
-                <span className="text-right">CO₂e saved</span>
-                <span />
-              </div>
-              <ul>
-                {entries.map((e) => (
-                  <LogRow
-                    key={e.id}
-                    entry={e}
-                    onRemove={() => {
-                      removeHistory(e.id);
-                      setEntries(loadHistory());
-                    }}
-                  />
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
-      </div>
+          <div className="hidden grid-cols-[96px_1fr_170px_140px_56px] gap-4 border-b border-rule bg-bg px-4 py-3 text-xs font-semibold uppercase text-ink-3 sm:grid sm:px-5">
+            <span>Date</span>
+            <span>Item</span>
+            <span>Verdict</span>
+            <span className="text-right">CO2e</span>
+            <span />
+          </div>
+
+          <ul>
+            {entries.map((e) => (
+              <LogRow
+                key={e.id}
+                entry={e}
+                onRemove={() => {
+                  removeHistory(e.id);
+                  setEntries(loadHistory());
+                }}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
 
-function Total({
-  label,
-  value,
-  borderL,
-}: {
-  label: string;
-  value: string;
-  borderL?: boolean;
-}) {
+function Total({ label, value }: { label: string; value: string }) {
   return (
-    <div className={cn("px-4 sm:px-5 py-5", borderL && "border-l border-rule")}>
-      <div className="mono text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
-        {label}
-      </div>
-      <div className="mt-1.5 text-[17px] font-medium tracking-[-0.01em] text-ink">
+    <div className="surface-inset px-4 py-4">
+      <div className="text-xs font-semibold uppercase text-ink-3">{label}</div>
+      <div className="mt-2 text-2xl font-semibold tabular-nums text-ink">
         {value}
       </div>
     </div>
@@ -164,11 +183,13 @@ function LogRow({
 }) {
   const cat = CATEGORIES.find((c) => c.id === entry.category);
   const v = entry.diagnosis.verdict as Verdict;
+  const tone = VERDICT_TONE[v];
+  const VerdictIcon = tone.icon;
   const co2 = entry.diagnosis.environmentalImpact.co2SavedKg || 0;
   return (
-    <li className="group grid grid-cols-[88px_1fr_40px] sm:grid-cols-[88px_1fr_180px_140px_40px] items-center gap-4 border-b border-rule py-4">
+    <li className="grid gap-4 border-b border-rule px-4 py-4 last:border-b-0 sm:grid-cols-[96px_1fr_170px_140px_56px] sm:items-center sm:px-5">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 shrink-0 border border-rule-strong overflow-hidden bg-bg-deep">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-rule bg-bg-deep sm:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={entry.image}
@@ -176,26 +197,32 @@ function LogRow({
             className="h-full w-full object-cover"
           />
         </div>
-        <span className="mono text-[11px] tracking-[0.02em] text-ink-3 hidden sm:inline">
+        <span className="text-sm font-semibold text-ink-3">
           {formatDateShort(entry.createdAt)}
         </span>
       </div>
 
       <div className="min-w-0">
-        <div className="text-[15px] text-ink truncate group-hover:underline underline-offset-4 decoration-1">
+        <div className="truncate text-base font-semibold text-ink">
           {entry.diagnosis.itemName}
         </div>
-        <div className="mono mt-1 text-[10.5px] uppercase tracking-[0.08em] text-ink-3 truncate">
+        <div className="mt-1 truncate text-xs font-semibold uppercase text-ink-3">
           {cat?.label ?? "Item"}
-          <span className="sm:hidden"> · {formatDateShort(entry.createdAt)}</span>
         </div>
       </div>
 
-      <div className={cn("mono hidden sm:block text-[12px] uppercase tracking-[0.04em]", VERDICT_COLOR[v])}>
+      <div
+        className={cn(
+          "inline-flex w-fit items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold",
+          tone.bg,
+          tone.color
+        )}
+      >
+        <VerdictIcon className="h-4 w-4" />
         {VERDICT_LABEL_SHORT[v]}
       </div>
 
-      <div className="hidden sm:block text-right mono text-[13px] tabular-nums text-ink">
+      <div className="text-left text-sm font-semibold tabular-nums text-ink sm:text-right">
         {co2.toFixed(1)} kg
       </div>
 
@@ -203,16 +230,17 @@ function LogRow({
         type="button"
         aria-label="Remove from log"
         onClick={onRemove}
-        className="mono justify-self-end text-[11px] text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 hover:text-v-replace cursor-pointer"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-rule text-ink-3 transition-colors hover:border-v-replace hover:text-v-replace sm:justify-self-end"
       >
-        ✕
+        <Trash2 className="h-4 w-4" />
       </button>
     </li>
   );
 }
 
 function formatDateShort(ts: number): string {
-  return new Date(ts)
-    .toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "2-digit" })
-    .replace(/\//g, "·");
+  return new Date(ts).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
 }

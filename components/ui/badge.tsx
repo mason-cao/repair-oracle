@@ -19,7 +19,7 @@ export function Badge({ className, tone = "ghost", ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        "mono inline-flex items-center gap-1.5 px-2 py-0.5 text-[10.5px] uppercase tracking-[0.08em]",
+        "inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-[10.5px] font-semibold uppercase",
         toneMap[tone],
         className
       )}
