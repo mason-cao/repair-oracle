@@ -4,28 +4,39 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium tracking-[-0.005em] transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest",
   {
     variants: {
       variant: {
         primary:
-          "bg-ink text-bone hover:bg-moss active:scale-[0.98] shadow-[0_1px_0_0_rgba(255,255,255,0.08)_inset,0_10px_24px_-12px_rgba(17,23,20,0.35)]",
-        moss:
-          "bg-moss text-bone hover:bg-forest active:scale-[0.98] shadow-[0_1px_0_0_rgba(255,255,255,0.1)_inset,0_10px_28px_-14px_rgba(14,42,29,0.55)]",
+          "bg-forest text-forest-ink hover:bg-ink",
+        secondary:
+          "bg-transparent text-ink border border-rule-strong hover:border-ink",
+        ghost:
+          "bg-transparent text-ink hover:bg-ink/5",
+        link:
+          "bg-transparent text-ink px-0 hover:underline underline-offset-4 decoration-1",
+        /* Legacy aliases — kept through staged refactor, dropped at cleanup */
         outline:
-          "border border-ink/15 bg-paper text-ink hover:bg-bone-100 hover:border-ink/25",
-        ghost: "bg-transparent text-ink hover:bg-ink/5",
+          "bg-transparent text-ink border border-rule-strong hover:border-ink",
+        moss:
+          "bg-forest text-forest-ink hover:bg-ink",
         amber:
-          "bg-amber text-paper hover:bg-rust active:scale-[0.98] shadow-[0_10px_24px_-12px_rgba(168,64,31,0.45)]",
+          "bg-amber text-bg hover:bg-ink",
       },
       size: {
-        sm: "h-9 px-4 text-sm rounded-full",
-        md: "h-11 px-5 text-[15px] rounded-full",
-        lg: "h-12 px-6 text-base rounded-full",
-        xl: "h-14 px-8 text-[17px] rounded-full",
-        icon: "h-10 w-10 rounded-full",
+        sm: "h-8 px-3 text-[13px]",
+        md: "h-10 px-4 text-sm",
+        lg: "h-12 px-5 text-[15px]",
+        xl: "h-12 px-5 text-[15px]",
+        icon: "h-10 w-10",
       },
     },
+    compoundVariants: [
+      { variant: "link", size: "sm", className: "h-auto" },
+      { variant: "link", size: "md", className: "h-auto" },
+      { variant: "link", size: "lg", className: "h-auto" },
+    ],
     defaultVariants: { variant: "primary", size: "md" },
   }
 );

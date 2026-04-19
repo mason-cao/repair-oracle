@@ -1,36 +1,35 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
 
 export function Nav() {
   return (
-    <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
-      <Link href="/" className="group">
-        <Logo />
-      </Link>
-      <nav className="hidden items-center gap-8 md:flex">
-        <Link
-          href="/#how"
-          className="text-sm text-ink-soft hover:text-ink transition-colors"
-        >
-          How it works
+    <header className="sticky top-0 z-30 bg-bg/85 backdrop-blur-[6px] rule-b">
+      <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between px-5 sm:px-8">
+        <Link href="/" className="inline-flex items-center transition-opacity hover:opacity-70">
+          <Logo />
         </Link>
-        <Link
-          href="/#log"
-          className="text-sm text-ink-soft hover:text-ink transition-colors"
-        >
-          Repair log
-        </Link>
-        <Link
-          href="/#earth"
-          className="text-sm text-ink-soft hover:text-ink transition-colors"
-        >
-          Why this matters
-        </Link>
-      </nav>
-      <Button asChild size="sm" variant="moss">
-        <Link href="/#diagnose">Start a diagnosis</Link>
-      </Button>
+
+        <nav className="flex items-center gap-7">
+          <Link
+            href="#diagnose"
+            className="hidden sm:inline text-sm text-ink-2 transition-colors hover:text-ink"
+          >
+            Diagnose
+          </Link>
+          <Link
+            href="#log"
+            className="hidden sm:inline text-sm text-ink-2 transition-colors hover:text-ink"
+          >
+            Log
+          </Link>
+          <Link
+            href="#diagnose"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-ink transition-colors hover:text-forest"
+          >
+            Begin <span aria-hidden>→</span>
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 }

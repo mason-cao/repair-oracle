@@ -1,34 +1,48 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export const Input = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, ...props }, ref) => (
-  <input
-    ref={ref}
-    className={cn(
-      "h-11 w-full rounded-xl border border-ink/15 bg-paper px-4 text-[15px] text-ink placeholder:text-stone focus:border-leaf focus:outline-none",
-      className
-    )}
-    {...props}
-  />
-));
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  variant?: "bordered" | "rule";
+};
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, variant = "bordered", ...props }, ref) => (
+    <input
+      ref={ref}
+      className={cn(
+        "w-full text-[15px] text-ink placeholder:text-ink-3 focus:outline-none transition-colors duration-150",
+        variant === "bordered" &&
+          "h-10 border border-rule-strong bg-bg-raised px-3 focus:border-ink",
+        variant === "rule" &&
+          "h-10 bg-transparent border-b border-rule-strong px-0 focus:border-ink",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 Input.displayName = "Input";
 
-export const Textarea = React.forwardRef<
-  HTMLTextAreaElement,
-  React.TextareaHTMLAttributes<HTMLTextAreaElement>
->(({ className, ...props }, ref) => (
-  <textarea
-    ref={ref}
-    className={cn(
-      "w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-[15px] text-ink placeholder:text-stone focus:border-leaf focus:outline-none resize-none",
-      className
-    )}
-    {...props}
-  />
-));
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  variant?: "bordered" | "rule";
+};
+
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, variant = "bordered", ...props }, ref) => (
+    <textarea
+      ref={ref}
+      className={cn(
+        "w-full text-[15px] text-ink placeholder:text-ink-3 focus:outline-none resize-none transition-colors duration-150",
+        variant === "bordered" &&
+          "min-h-[96px] border border-rule-strong bg-bg-raised px-3 py-2.5 focus:border-ink",
+        variant === "rule" &&
+          "min-h-[96px] bg-transparent border-b border-rule-strong px-0 py-2 focus:border-ink",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 Textarea.displayName = "Textarea";
 
 export const Label = React.forwardRef<
@@ -37,10 +51,7 @@ export const Label = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <label
     ref={ref}
-    className={cn(
-      "text-xs font-medium uppercase tracking-[0.14em] text-ink-soft",
-      className
-    )}
+    className={cn("mono text-[11px] tracking-[0.02em] text-ink-3", className)}
     {...props}
   />
 ));

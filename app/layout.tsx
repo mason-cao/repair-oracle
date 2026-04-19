@@ -1,35 +1,28 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans-body",
   subsets: ["latin"],
   display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-serif-display",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-  display: "swap",
+  preload: true,
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono-code",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
-  title: "Repair Oracle — Diagnose, repair, and divert from landfill",
+  title: "Repair Oracle — A diagnostic for broken things",
   description:
-    "Snap a photo of a broken thing. Repair Oracle tells you exactly how to fix it, salvage it, or send it to its most sustainable end — before you throw it away.",
+    "Photograph a broken object. Get a verdict: repair, salvage, recycle, or replace — with the steps, parts, cost, and the landfill you skip.",
   openGraph: {
     title: "Repair Oracle",
-    description:
-      "AI-powered repair diagnosis for broken household items. Built for Earth Day.",
+    description: "A diagnostic for broken things.",
     type: "website",
   },
   metadataBase: new URL("https://repair-oracle.local"),
@@ -41,9 +34,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
     >
-      <body className="min-h-full bg-bone text-ink">{children}</body>
+      <body className="min-h-screen bg-bg text-ink">{children}</body>
     </html>
   );
 }
