@@ -46,21 +46,17 @@ const VERDICT_TONE: Record<
 
 export function RepairLog({ refreshKey }: { refreshKey: number }) {
   const [entries, setEntries] = React.useState<HistoryEntry[]>([]);
-  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     let active = true;
     queueMicrotask(() => {
       if (!active) return;
       setEntries(loadHistory());
-      setMounted(true);
     });
     return () => {
       active = false;
     };
   }, [refreshKey]);
-
-  if (!mounted) return null;
 
   const totalCo2 = entries.reduce(
     (sum, e) => sum + (e.diagnosis.environmentalImpact.co2SavedKg || 0),
@@ -75,24 +71,24 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
     <section
       id="log"
       aria-labelledby="log-heading"
-      className="mx-auto w-full max-w-[1720px] px-5 py-16 sm:px-8 sm:py-24 xl:px-10"
+      className="mx-auto w-full max-w-[1720px] scroll-mt-24 px-5 py-16 sm:px-8 sm:py-24 xl:px-10"
     >
-      <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.76fr_1.24fr]">
-        <div>
-          <div className="inline-flex items-center gap-2 text-sm font-semibold uppercase text-forest">
+      <div className="grid gap-6 lg:grid-cols-[0.76fr_1.24fr]">
+        <div className="surface-panel p-5 sm:p-6">
+          <div className="section-kicker">
             <History className="h-4 w-4" />
             Repair log
           </div>
-          <h2 id="log-heading" className="t-h1 mt-4 text-ink">
+          <h2 id="log-heading" className="t-h1 mt-5 text-ink">
             Every verdict, remembered.
           </h2>
-          <p className="mt-4 max-w-[34rem] text-base leading-7 text-ink-2">
+          <p className="mt-4 max-w-[38rem] text-base leading-7 text-ink-2">
             Diagnoses stay on this device, keeping cumulative material impact
             visible without accounts or a backend.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="command-panel grid gap-3 p-5 sm:grid-cols-3 sm:p-6">
           <Total label="Items" value={entries.length.toString()} />
           <Total label="CO2e saved" value={`${totalCo2.toFixed(1)} kg`} />
           <Total
@@ -103,22 +99,22 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
       </div>
 
       {entries.length === 0 ? (
-        <div className="surface-panel mt-8 grid min-h-[260px] place-items-center p-6 text-center">
+        <div className="surface-panel mt-6 grid min-h-[300px] place-items-center p-6 text-center">
           <div>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-mint text-forest">
-              <Leaf className="h-6 w-6" />
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-md border border-rule bg-mint text-bg-contrast">
+              <Leaf className="h-7 w-7" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold text-ink">
+            <h3 className="mt-5 text-2xl font-semibold text-ink">
               No diagnoses yet.
             </h3>
-            <p className="mt-3 max-w-[28rem] text-sm leading-6 text-ink-3">
+            <p className="mt-3 max-w-[30rem] text-sm leading-6 text-ink-3">
               Run the workspace above and your repair decisions will appear
-              here.
+              here as a material ledger.
             </p>
           </div>
         </div>
       ) : (
-        <div className="surface-panel mt-8 overflow-hidden">
+        <div className="surface-panel mt-6 overflow-hidden">
           <div className="flex items-center justify-between gap-4 border-b border-rule px-4 py-3 sm:px-5">
             <div className="text-sm font-semibold text-ink">
               Saved diagnoses
@@ -130,14 +126,14 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
                   setEntries([]);
                 }
               }}
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-rule bg-bg px-3 text-sm font-semibold text-ink-2 transition-colors hover:border-v-replace hover:text-v-replace"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-rule bg-bg-raised px-3 text-sm font-semibold text-ink-2 hover:border-v-replace hover:text-v-replace"
             >
               <Trash2 className="h-4 w-4" />
               Clear
             </button>
           </div>
 
-          <div className="hidden grid-cols-[96px_1fr_170px_140px_56px] gap-4 border-b border-rule bg-bg px-4 py-3 text-xs font-semibold uppercase text-ink-3 sm:grid sm:px-5">
+          <div className="hidden grid-cols-[96px_1fr_170px_140px_56px] gap-4 border-b border-rule bg-bg/70 px-4 py-3 text-xs font-semibold uppercase text-ink-3 sm:grid sm:px-5">
             <span>Date</span>
             <span>Item</span>
             <span>Verdict</span>
@@ -165,9 +161,11 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
 
 function Total({ label, value }: { label: string; value: string }) {
   return (
-    <div className="surface-inset px-4 py-4">
-      <div className="text-xs font-semibold uppercase text-ink-3">{label}</div>
-      <div className="mt-2 text-2xl font-semibold tabular-nums text-ink">
+    <div className="material-tile px-4 py-4">
+      <div className="text-xs font-semibold uppercase text-forest-ink/50">
+        {label}
+      </div>
+      <div className="mt-2 text-2xl font-semibold tabular-nums text-forest-ink">
         {value}
       </div>
     </div>
@@ -187,7 +185,7 @@ function LogRow({
   const VerdictIcon = tone.icon;
   const co2 = entry.diagnosis.environmentalImpact.co2SavedKg || 0;
   return (
-    <li className="grid gap-4 border-b border-rule px-4 py-4 transition-colors hover:bg-bg/70 last:border-b-0 sm:grid-cols-[96px_1fr_170px_140px_56px] sm:items-center sm:px-5">
+    <li className="grid gap-4 border-b border-rule px-4 py-4 hover:bg-bg/60 last:border-b-0 sm:grid-cols-[96px_1fr_170px_140px_56px] sm:items-center sm:px-5">
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-rule bg-bg-deep sm:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -213,9 +211,13 @@ function LogRow({
 
       <div
         className={cn(
-          "inline-flex w-fit items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold",
+          "inline-flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold",
           tone.bg,
-          tone.color
+          tone.color,
+          v === "repair" && "border-v-repair/25",
+          v === "salvage" && "border-v-salvage/25",
+          v === "recycle" && "border-v-recycle/25",
+          v === "replace" && "border-v-replace/25"
         )}
       >
         <VerdictIcon className="h-4 w-4" />
@@ -230,7 +232,7 @@ function LogRow({
         type="button"
         aria-label="Remove from log"
         onClick={onRemove}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-rule text-ink-3 transition-colors hover:border-v-replace hover:text-v-replace sm:justify-self-end"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-rule text-ink-3 hover:border-v-replace hover:text-v-replace sm:justify-self-end"
       >
         <Trash2 className="h-4 w-4" />
       </button>

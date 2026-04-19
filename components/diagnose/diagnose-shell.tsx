@@ -15,9 +15,9 @@ type Result = {
 };
 
 const STEPS = [
-  { label: "Capture", icon: ImagePlus },
-  { label: "Analyze", icon: ScanLine },
-  { label: "Act", icon: CheckCircle2 },
+  { label: "Capture", icon: ImagePlus, target: "capture-bay" },
+  { label: "Analyze", icon: ScanLine, target: "intake-profile" },
+  { label: "Act", icon: CheckCircle2, target: "verdict-report" },
 ];
 
 export function DiagnoseShell({ onNewEntry }: { onNewEntry: () => void }) {
@@ -48,15 +48,23 @@ export function DiagnoseShell({ onNewEntry }: { onNewEntry: () => void }) {
     }
   }
 
+  function scrollToWorkspaceTarget(id: string) {
+    const fallback = id === "verdict-report" && !result ? "intake-profile" : id;
+    document
+      .getElementById(fallback)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <section
       id="diagnose"
       aria-labelledby="diagnose-heading"
       className="mx-auto w-full max-w-[1720px] scroll-mt-24 px-5 py-12 sm:px-8 sm:py-16 xl:px-10"
     >
-      <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+      <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
         <div>
-          <div className="text-sm font-semibold uppercase text-forest">
+          <div className="section-kicker">
+            <ScanLine className="h-4 w-4" />
             Diagnosis workspace
           </div>
           <h2 id="diagnose-heading" className="t-h1 mt-4 text-ink">
@@ -70,14 +78,16 @@ export function DiagnoseShell({ onNewEntry }: { onNewEntry: () => void }) {
         </div>
 
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          {STEPS.map(({ label, icon: Icon }, index) => {
+          {STEPS.map(({ label, icon: Icon, target }, index) => {
             const active = result ? index === 2 : index === 0;
             const done = result && index < 2;
             return (
-              <div
+              <button
+                type="button"
                 key={label}
-                className={`surface-inset px-3 py-3 ${
-                  active ? "border-forest bg-mint/50" : ""
+                onClick={() => scrollToWorkspaceTarget(target)}
+                className={`surface-panel px-3 py-3 ${
+                  active ? "border-forest bg-forest/20" : ""
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -93,7 +103,7 @@ export function DiagnoseShell({ onNewEntry }: { onNewEntry: () => void }) {
                 <div className="mt-3 text-sm font-semibold text-ink">
                   {label}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

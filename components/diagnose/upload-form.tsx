@@ -142,13 +142,15 @@ export function UploadForm({
       onSubmit={submit}
       className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6"
     >
-      <div className="surface-panel overflow-hidden">
-        <div className="flex items-center justify-between border-b border-rule px-4 py-3 sm:px-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-            <ImagePlus className="h-4 w-4 text-forest" />
-            Object photo
+      <div id="capture-bay" className="command-panel scroll-mt-24 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-forest-ink/15 px-4 py-3 sm:px-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-forest-ink">
+            <ImagePlus className="h-4 w-4 text-mint" />
+            Capture bay
           </div>
-          <span className="text-xs font-medium text-ink-3">JPG PNG HEIC</span>
+          <span className="text-xs font-semibold uppercase text-forest-ink/50">
+            JPG PNG HEIC
+          </span>
         </div>
 
         <div
@@ -163,9 +165,8 @@ export function UploadForm({
             handleFile(e.dataTransfer.files?.[0] ?? null);
           }}
           className={cn(
-            "relative aspect-[4/3] w-full bg-bg-deep transition-colors",
-            !preview && "border-0",
-            dragOver && "bg-mint"
+            "console-grid relative aspect-[4/3] w-full bg-bg-contrast transition-colors",
+            dragOver && "bg-moss"
           )}
         >
           {preview ? (
@@ -177,7 +178,7 @@ export function UploadForm({
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3">
-                <span className="rounded-md bg-bg-raised/92 px-3 py-2 text-xs font-semibold text-ink shadow-sm">
+                <span className="rounded-md border border-forest-ink/15 bg-bg-contrast/80 px-3 py-2 text-xs font-semibold text-forest-ink backdrop-blur">
                   {file?.name}
                 </span>
                 {stage !== "analyzing" && (
@@ -185,26 +186,27 @@ export function UploadForm({
                     type="button"
                     onClick={clearFile}
                     aria-label="Remove photo"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-ink text-bg transition-colors hover:bg-v-replace"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-forest-ink/15 bg-bg-contrast/80 text-forest-ink hover:bg-v-replace"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
               {stage === "analyzing" && (
-                <div className="absolute inset-0 flex flex-col justify-end bg-ink/72 p-5 text-bg">
+                <div className="absolute inset-0 flex flex-col justify-end bg-bg-contrast/80 p-5 text-forest-ink backdrop-blur-sm">
+                  <div className="scan-sweep absolute inset-x-0 top-0 h-28" />
                   <div className="flex items-center gap-2 text-sm font-semibold">
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    <LoaderCircle className="h-4 w-4 animate-spin text-mint" />
                     Running diagnosis
                   </div>
                   <div className="mt-4 grid gap-2">
                     {SCAN_STEPS.slice(0, scanProgress).map((step, i) => (
                       <div
                         key={step}
-                        className="flex items-center justify-between border-t border-bg/18 pt-2 text-sm"
+                        className="flex items-center justify-between border-t border-forest-ink/15 pt-2 text-sm"
                       >
                         <span>{step}</span>
-                        <span className="text-bg/68">
+                        <span className="text-forest-ink/60">
                           {i < scanProgress - 1 ? "done" : "active"}
                         </span>
                       </div>
@@ -215,15 +217,16 @@ export function UploadForm({
             </>
           ) : (
             <div className="absolute inset-0 grid place-items-center p-5">
-              <div className="max-w-[28rem] text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-forest text-forest-ink">
-                  <Upload className="h-6 w-6" />
+              <div className="max-w-[30rem] text-center">
+                <div className="mx-auto grid h-16 w-16 place-items-center rounded-md border border-mint/25 bg-mint/10 text-mint">
+                  <Upload className="h-7 w-7" />
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-ink">
+                <h3 className="mt-5 text-2xl font-semibold text-forest-ink">
                   Add the broken object.
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-ink-2">
-                  Keep the failure point visible and avoid heavy shadows.
+                <p className="mt-3 text-sm leading-6 text-forest-ink/65">
+                  Frame the failure point clearly. The engine uses the image and
+                  your note to score repair viability.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <button
@@ -232,7 +235,7 @@ export function UploadForm({
                       inputRef.current?.removeAttribute("capture");
                       inputRef.current?.click();
                     }}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-ink px-4 text-sm font-semibold text-bg transition-colors hover:bg-forest"
+                    className="premium-button inline-flex h-11 items-center justify-center gap-2 px-4 text-sm font-semibold"
                   >
                     <Upload className="h-4 w-4" />
                     Choose file
@@ -243,7 +246,7 @@ export function UploadForm({
                       inputRef.current?.setAttribute("capture", "environment");
                       inputRef.current?.click();
                     }}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-bg-raised px-4 text-sm font-semibold text-ink transition-colors hover:border-ink"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-forest-ink/20 bg-forest-ink/10 px-4 text-sm font-semibold text-forest-ink hover:bg-forest-ink/15"
                   >
                     <Camera className="h-4 w-4" />
                     Camera
@@ -261,32 +264,37 @@ export function UploadForm({
           />
         </div>
 
-        <div className="grid grid-cols-3 border-t border-rule">
+        <div className="grid grid-cols-3 border-t border-forest-ink/15">
           <StatusCell label="File" value={file ? formatBytes(file.size) : "None"} />
           <StatusCell label="Privacy" value="Submit only" />
           <StatusCell label="Limit" value="8MB" />
         </div>
       </div>
 
-      <div className="surface-panel p-4 sm:p-5">
+      <div id="intake-profile" className="surface-panel scroll-mt-24 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <button
+              type="button"
+              onClick={() => document.getElementById("itemHint")?.focus()}
+              className="flex items-center gap-2 text-sm font-semibold text-ink hover:text-mint"
+            >
               <ScanLine className="h-4 w-4 text-forest" />
-              Object details
-            </div>
+              Intake profile
+            </button>
             <p className="mt-2 text-sm leading-6 text-ink-3">
-              Specific symptoms produce better parts, cost, and safety calls.
+              Specific symptoms produce sharper parts, cost, safety, and
+              material-impact recommendations.
             </p>
           </div>
-          <div className="rounded-sm bg-bg px-2 py-1 text-xs font-semibold text-ink-3">
+          <div className="rounded-sm border border-rule bg-bg-raised px-2 py-1 text-xs font-semibold text-ink-3">
             {stage.toUpperCase()}
           </div>
         </div>
 
         <div className="mt-6 grid gap-6">
           <fieldset className="grid gap-3">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">Material family</Label>
             <div className="grid grid-cols-2 gap-2">
               {CATEGORIES.map((c) => (
                 <button
@@ -294,10 +302,10 @@ export function UploadForm({
                   key={c.id}
                   onClick={() => setCategory(c.id)}
                   className={cn(
-                    "min-h-11 rounded-md border px-3 py-2 text-left text-sm font-semibold transition-colors",
+                    "min-h-11 rounded-md border px-3 py-2 text-left text-sm font-semibold",
                     category === c.id
-                      ? "border-forest bg-mint text-forest"
-                      : "border-rule bg-bg text-ink-2 hover:border-rule-strong hover:text-ink"
+                      ? "border-forest bg-forest text-bg-contrast shadow-[0_10px_28px_rgba(7,19,15,0.16)]"
+                      : "border-rule bg-bg-raised/75 text-ink-2 hover:border-rule-strong hover:bg-bg-raised hover:text-ink"
                   )}
                 >
                   {c.label}
@@ -346,7 +354,7 @@ export function UploadForm({
             <button
               type="submit"
               disabled={!canSubmit}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-ink px-5 text-[15px] font-semibold text-bg transition-colors hover:bg-forest disabled:cursor-not-allowed disabled:opacity-45"
+              className="premium-button inline-flex h-12 items-center justify-center gap-2 px-5 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-45"
             >
               {stage === "analyzing" ? (
                 <>
@@ -371,10 +379,12 @@ export function UploadForm({
 function StatusCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-4 py-3">
-      <div className="text-[11px] font-semibold uppercase text-ink-3">
+      <div className="text-[11px] font-semibold uppercase text-forest-ink/40">
         {label}
       </div>
-      <div className="mt-1 truncate text-sm font-semibold text-ink">{value}</div>
+      <div className="mt-1 truncate text-sm font-semibold text-forest-ink">
+        {value}
+      </div>
     </div>
   );
 }
