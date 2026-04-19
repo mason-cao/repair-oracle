@@ -9,7 +9,7 @@ export function Logo({ className }: { className?: string }) {
           Repair Oracle
         </span>
         <span className="mt-1 hidden text-[11px] text-ink-3 sm:block">
-          Earth Day diagnostic
+          Repair intelligence
         </span>
       </div>
     </div>

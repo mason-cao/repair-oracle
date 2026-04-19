@@ -75,7 +75,7 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
     <section
       id="log"
       aria-labelledby="log-heading"
-      className="mx-auto w-full max-w-[1280px] px-5 py-16 sm:px-8 sm:py-24"
+      className="mx-auto w-full max-w-[1720px] px-5 py-16 sm:px-8 sm:py-24 xl:px-10"
     >
       <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.76fr_1.24fr]">
         <div>
@@ -87,8 +87,8 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
             Every verdict, remembered.
           </h2>
           <p className="mt-4 max-w-[34rem] text-base leading-7 text-ink-2">
-            Diagnoses stay on this device so the demo can show cumulative
-            material impact without accounts or a backend.
+            Diagnoses stay on this device, keeping cumulative material impact
+            visible without accounts or a backend.
           </p>
         </div>
 
@@ -187,7 +187,7 @@ function LogRow({
   const VerdictIcon = tone.icon;
   const co2 = entry.diagnosis.environmentalImpact.co2SavedKg || 0;
   return (
-    <li className="grid gap-4 border-b border-rule px-4 py-4 last:border-b-0 sm:grid-cols-[96px_1fr_170px_140px_56px] sm:items-center sm:px-5">
+    <li className="grid gap-4 border-b border-rule px-4 py-4 transition-colors hover:bg-bg/70 last:border-b-0 sm:grid-cols-[96px_1fr_170px_140px_56px] sm:items-center sm:px-5">
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-rule bg-bg-deep sm:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}

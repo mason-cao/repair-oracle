@@ -32,7 +32,7 @@ export function Dispatch() {
     <section
       id="dispatch"
       aria-labelledby="dispatch-heading"
-      className="mx-auto w-full max-w-[1280px] px-5 py-16 sm:px-8 sm:py-24"
+      className="mx-auto w-full max-w-[1720px] px-5 py-16 sm:px-8 sm:py-24 xl:px-10"
     >
       <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
         <div>

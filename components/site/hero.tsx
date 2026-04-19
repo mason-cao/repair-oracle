@@ -54,14 +54,14 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="mx-auto w-full max-w-[1280px] px-5 pb-10 pt-8 sm:px-8 sm:pb-12 sm:pt-12"
+      className="mx-auto flex min-h-[calc(100svh-64px)] w-full max-w-[1720px] px-5 pb-10 pt-8 sm:px-8 sm:pb-12 sm:pt-12 xl:px-10"
     >
-      <div className="grid items-stretch gap-8 lg:grid-cols-[1.02fr_0.98fr]">
-        <div className="flex min-h-[520px] flex-col justify-between py-3 sm:py-6">
+      <div className="grid w-full items-stretch gap-8 lg:grid-cols-[0.82fr_1.18fr]">
+        <div className="flex min-h-[560px] flex-col justify-between py-3 sm:py-6 xl:min-h-[700px]">
           <div className="rise">
             <div className="inline-flex items-center gap-2 rounded-md border border-rule bg-bg-raised px-3 py-2 text-sm font-medium text-forest">
               <Leaf className="h-4 w-4" />
-              Earth Day Hackathon 2026
+              Circular repair intelligence
             </div>
             <h1 id="hero-heading" className="t-hero mt-7 max-w-[9ch] text-ink">
               Repair Oracle
@@ -107,7 +107,7 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
           </div>
         </div>
 
-        <div className="surface-panel overflow-hidden bg-bg-raised">
+        <div className="surface-panel min-h-[620px] overflow-hidden bg-bg-raised xl:min-h-[760px]">
           <div className="flex items-center justify-between border-b border-rule px-4 py-3 sm:px-5">
             <div className="flex items-center gap-2 text-sm font-semibold text-ink">
               <ScanLine className="h-4 w-4 text-forest" />
@@ -146,7 +146,7 @@ function LiveStat({
 
 function RepairConsoleVisual() {
   return (
-    <div className="grid min-h-[520px] grid-rows-[1fr_auto] bg-bg-raised">
+    <div className="grid min-h-[560px] grid-rows-[1fr_auto] bg-bg-raised xl:min-h-[700px]">
       <div className="grid gap-0 md:grid-cols-[1fr_0.84fr]">
         <div className="relative min-h-[330px] border-b border-rule bg-bg-deep md:border-b-0 md:border-r">
           <div className="absolute inset-5 rounded-lg border border-ink/10 bg-bg-raised shadow-[0_24px_80px_rgba(16,23,20,0.12)]">
@@ -158,6 +158,7 @@ function RepairConsoleVisual() {
             <div className="grid h-[calc(100%-2.5rem)] grid-rows-[1fr_auto] p-4">
               <div className="relative overflow-hidden rounded-md border border-rule bg-ink">
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,247,239,0.05)_1px,transparent_1px),linear-gradient(rgba(244,247,239,0.05)_1px,transparent_1px)] bg-[length:22px_22px]" />
+                <div className="scan-sweep absolute inset-x-0 top-0 h-28" />
                 <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-md border border-bg/30 bg-bg/10 p-3">
                   <div className="h-full rounded-sm border border-bg/20 bg-bg/10 p-4">
                     <Wrench className="h-10 w-10 text-mint" />
@@ -169,6 +170,10 @@ function RepairConsoleVisual() {
                   <div className="h-1.5 rounded-full bg-v-repair" />
                   <div className="h-1.5 rounded-full bg-v-salvage" />
                   <div className="h-1.5 rounded-full bg-v-recycle" />
+                </div>
+                <div className="absolute right-4 top-4 grid gap-1.5">
+                  <span className="h-1.5 w-20 rounded-full bg-mint/70" />
+                  <span className="h-1.5 w-14 rounded-full bg-bg/30" />
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2">
@@ -220,7 +225,7 @@ function RepairConsoleVisual() {
             </div>
             <p className="mt-3 text-sm leading-6 text-forest-ink/82">
               Every diagnosis returns a practical repair path and a material
-              impact estimate for the demo judges to inspect.
+              impact estimate you can act on.
             </p>
           </div>
         </div>

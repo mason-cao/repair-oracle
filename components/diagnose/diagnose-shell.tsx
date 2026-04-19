@@ -52,7 +52,7 @@ export function DiagnoseShell({ onNewEntry }: { onNewEntry: () => void }) {
     <section
       id="diagnose"
       aria-labelledby="diagnose-heading"
-      className="mx-auto w-full max-w-[1280px] scroll-mt-24 px-5 py-12 sm:px-8 sm:py-16"
+      className="mx-auto w-full max-w-[1720px] scroll-mt-24 px-5 py-12 sm:px-8 sm:py-16 xl:px-10"
     >
       <div className="grid gap-8 border-t border-rule pt-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
         <div>
