@@ -1,44 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import {
-  Wrench,
-  Recycle,
-  Package,
-  ShoppingBag,
-  AlertTriangle,
-  Leaf,
-  Clock,
-  DollarSign,
-  Gauge,
-  ListOrdered,
-  Hammer,
-  Cog,
-  Share2,
-  RotateCcw,
-  Compass,
-  CheckCircle2,
-} from "lucide-react";
 import {
   type Diagnosis,
   VERDICT_META,
-  verdictChipClass,
   type Verdict,
   CATEGORIES,
   type CategoryId,
 } from "@/lib/diagnosis";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn, formatCurrency } from "@/lib/utils";
 
-const VerdictIcon = {
-  repair: Wrench,
-  salvage: Package,
-  recycle: Recycle,
-  replace: ShoppingBag,
-} as const;
+const VERDICT_COLOR: Record<Verdict, string> = {
+  repair: "text-v-repair",
+  salvage: "text-v-salvage",
+  recycle: "text-v-recycle",
+  replace: "text-v-replace",
+};
+
+const VERDICT_LABEL: Record<Verdict, string> = {
+  repair: "Repair.",
+  salvage: "Salvage.",
+  recycle: "Recycle.",
+  replace: "Replace.",
+};
 
 export function Report({
   diagnosis,
@@ -54,401 +38,315 @@ export function Report({
   onReset: () => void;
 }) {
   const cat = CATEGORIES.find((c) => c.id === category);
-  const verdictMeta = VERDICT_META[diagnosis.verdict];
-  const Icon = VerdictIcon[diagnosis.verdict];
   const savings = Math.max(
     0,
     diagnosis.estReplacementCostUsd - diagnosis.estRepairCostUsd
   );
-  const repairIsCheaper =
-    diagnosis.estRepairCostUsd < diagnosis.estReplacementCostUsd;
+  const maxCost = Math.max(
+    diagnosis.estRepairCostUsd,
+    diagnosis.estReplacementCostUsd,
+    1
+  );
+  const repairPct = Math.max(6, (diagnosis.estRepairCostUsd / maxCost) * 100);
+  const replacePct = Math.max(6, (diagnosis.estReplacementCostUsd / maxCost) * 100);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
-      className="grid gap-6"
-    >
-      {/* Verdict Hero */}
-      <Card className="overflow-hidden">
-        <div className="grid md:grid-cols-[320px_1fr]">
-          <div className="relative h-64 md:h-auto bg-bone-100">
+    <div className="flex flex-col gap-14 sm:gap-20">
+      {/* Row 1 — Verdict banner */}
+      <section className="grid grid-cols-12 gap-6 sm:gap-8">
+        <figure className="col-span-12 md:col-span-5">
+          <div className="relative aspect-[3/2] w-full border border-rule-strong overflow-hidden bg-bg-deep">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={image}
               alt={diagnosis.itemName}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-              <Badge className="bg-paper/95 text-ink-soft">
-                {cat?.label ?? "Item"}
-              </Badge>
-              <div className="mono text-[10px] uppercase tracking-[0.18em] text-paper/90">
-                {formatDate(new Date())}
-              </div>
+          </div>
+          <figcaption className="mono mt-3 flex items-baseline justify-between text-[10.5px] tracking-[0.02em] text-ink-3">
+            <span className="uppercase">{cat?.label ?? "Item"}</span>
+            <time>{formatDate(new Date())}</time>
+          </figcaption>
+        </figure>
+
+        <div className="col-span-12 md:col-span-7 flex flex-col gap-6">
+          <div>
+            <div className="mono text-[11px] tracking-[0.02em] text-ink-3">
+              Verdict
             </div>
+            <h3 className="t-h1 mt-2 text-ink">{diagnosis.itemName}</h3>
           </div>
 
-          <div className="flex flex-col gap-5 p-7">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="mono text-[11px] uppercase tracking-[0.22em] text-stone">
-                  Verdict
-                </div>
-                <h2 className="serif text-4xl leading-tight text-ink mt-1">
-                  {diagnosis.itemName}
-                </h2>
-              </div>
-              <div
-                className={cn(
-                  "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border",
-                  verdictChipClass(diagnosis.verdict)
-                )}
-              >
-                <Icon className="h-6 w-6" />
-              </div>
-            </div>
+          <div
+            className={cn("t-display verdict-in", VERDICT_COLOR[diagnosis.verdict])}
+            aria-label={`Verdict: ${VERDICT_META[diagnosis.verdict].label}`}
+          >
+            {VERDICT_LABEL[diagnosis.verdict]}
+          </div>
 
-            <div className="flex items-center gap-3">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold",
-                  verdictChipClass(diagnosis.verdict)
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {verdictMeta.label}
+          <p className="t-body max-w-[58ch] text-ink-2">
+            {diagnosis.verdictReason}
+          </p>
+
+          <div className="mono flex items-center gap-6 text-[11px] tracking-[0.02em] text-ink-3">
+            <span>
+              Confidence{" "}
+              <span className="text-ink">
+                {Math.round(diagnosis.confidence)}
               </span>
-              <ConfidenceMeter value={diagnosis.confidence} />
-            </div>
-
-            <p className="text-[15px] leading-relaxed text-ink-soft">
-              {diagnosis.verdictReason}
-            </p>
-
-            <div className="grid grid-cols-3 gap-3 border-t border-ink/10 pt-5">
-              <Stat
-                icon={<DollarSign className="h-4 w-4" />}
-                label="Repair cost"
-                value={formatCurrency(diagnosis.estRepairCostUsd)}
-              />
-              <Stat
-                icon={<Clock className="h-4 w-4" />}
-                label="Time"
-                value={formatTime(diagnosis.timeEstimateMinutes)}
-              />
-              <Stat
-                icon={<Gauge className="h-4 w-4" />}
-                label="Difficulty"
-                value={formatDifficulty(diagnosis.difficulty)}
-              />
-            </div>
+              <span className="text-ink-3">/100</span>
+            </span>
+            <span aria-hidden>·</span>
+            <span>{VERDICT_META[diagnosis.verdict].tagline}</span>
           </div>
         </div>
-      </Card>
+      </section>
 
-      {/* Observed + Environmental */}
-      <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
-        <Card className="p-7">
-          <SectionTitle icon={<Compass className="h-4 w-4" />}>
-            What we observed
-          </SectionTitle>
-          <p className="text-[15px] leading-relaxed text-ink-soft">
-            {diagnosis.observed}
-          </p>
-          <div className="mt-5 rounded-2xl border border-ink/10 bg-bone-50 p-4">
-            <div className="mono text-[10px] uppercase tracking-[0.2em] text-stone">
-              Your description
-            </div>
-            <div className="mt-1 text-[14px] text-ink-soft italic">
-              &ldquo;{symptom}&rdquo;
-            </div>
-          </div>
-        </Card>
+      {/* Row 2 — Metadata strip */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 rule-t rule-b">
+        <Meta label="Difficulty" value={formatDifficulty(diagnosis.difficulty)} />
+        <Meta label="Time" value={formatTime(diagnosis.timeEstimateMinutes)} borderL />
+        <Meta label="Cost · repair" value={formatCurrency(diagnosis.estRepairCostUsd)} borderL />
+        <Meta label="Cost · replace" value={formatCurrency(diagnosis.estReplacementCostUsd)} borderL />
+      </section>
 
-        <Card className="relative overflow-hidden p-7 bg-moss text-bone">
-          <div className="absolute inset-0 bg-topo opacity-30 pointer-events-none" />
-          <div className="relative">
-            <div className="flex items-center gap-2 mono text-[11px] uppercase tracking-[0.2em] text-bone/70">
-              <Leaf className="h-3.5 w-3.5" />
-              Earth impact
+      {/* Row 3 — Observed + Impact */}
+      <section className="grid grid-cols-12 gap-6 sm:gap-10">
+        <div className="col-span-12 md:col-span-6">
+          <SectionLabel>01 · Observed</SectionLabel>
+          <p className="t-body max-w-[58ch] text-ink-2">{diagnosis.observed}</p>
+          <blockquote className="mt-6 border-l-2 border-rule-strong pl-4 t-small text-ink-2 italic">
+            &ldquo;{symptom}&rdquo;
+            <div className="mono not-italic mt-2 text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
+              From your note
             </div>
-            <div className="mt-4 serif text-5xl leading-none">
+          </blockquote>
+        </div>
+
+        <div className="col-span-12 md:col-span-6 md:border-l md:border-rule md:pl-10">
+          <SectionLabel>02 · Earth impact</SectionLabel>
+          <div className="flex items-baseline gap-3">
+            <span className="t-display text-ink">
               {formatNumber(diagnosis.environmentalImpact.co2SavedKg)}
-              <span className="ml-2 text-xl text-bone/70">kg CO₂e</span>
-            </div>
-            <div className="mt-1 text-sm text-bone/70">
-              avoided versus buying a replacement
-            </div>
-            <div className="mt-5 flex items-baseline gap-2">
-              <div className="serif text-2xl">
-                {formatNumber(diagnosis.environmentalImpact.landfillDivertedKg)}
-              </div>
-              <div className="text-xs text-bone/70">kg diverted from landfill</div>
-            </div>
-            <p className="mt-5 text-[13px] leading-relaxed text-bone/80">
-              {diagnosis.environmentalImpact.note}
-            </p>
+            </span>
+            <span className="mono text-[11px] tracking-[0.02em] text-ink-3">
+              kg CO₂e avoided
+            </span>
           </div>
-        </Card>
-      </div>
+          <div className="mt-4 flex items-baseline gap-3">
+            <span className="t-h2 text-ink">
+              {formatNumber(diagnosis.environmentalImpact.landfillDivertedKg)}
+            </span>
+            <span className="mono text-[11px] tracking-[0.02em] text-ink-3">
+              kg kept from landfill
+            </span>
+          </div>
+          <p className="mt-6 max-w-[52ch] t-small text-ink-2">
+            {diagnosis.environmentalImpact.note}
+          </p>
+        </div>
+      </section>
 
-      {/* Repair steps */}
-      {diagnosis.repairSteps.length > 0 && (
-        <Card className="p-7">
-          <SectionTitle icon={<ListOrdered className="h-4 w-4" />}>
-            Repair walkthrough
-          </SectionTitle>
-          <ol className="grid gap-4">
-            {diagnosis.repairSteps.map((step, i) => (
-              <li key={i} className="flex gap-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-bone text-sm serif">
-                  {i + 1}
-                </div>
-                <div className="flex-1 pt-1">
-                  <div className="text-[15px] font-semibold text-ink">
-                    {step.title}
-                  </div>
-                  <div className="mt-1 text-[14px] leading-relaxed text-ink-soft">
-                    {step.detail}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </Card>
-      )}
-
-      {/* Parts + tools + safety */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="p-6">
-          <SectionTitle icon={<Cog className="h-4 w-4" />}>Parts</SectionTitle>
-          {diagnosis.parts.length === 0 ? (
-            <p className="text-sm text-stone">No parts needed.</p>
+      {/* Row 4 — Steps + Parts & tools */}
+      <section className="grid grid-cols-12 gap-6 sm:gap-10">
+        <div className="col-span-12 md:col-span-8">
+          <SectionLabel>03 · Procedure</SectionLabel>
+          {diagnosis.repairSteps.length === 0 ? (
+            <p className="t-small text-ink-3">No procedure needed.</p>
           ) : (
-            <ul className="space-y-3">
-              {diagnosis.parts.map((p, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber" />
+            <ol className="flex flex-col">
+              {diagnosis.repairSteps.map((step, i) => (
+                <li
+                  key={i}
+                  className="grid grid-cols-[3rem_1fr] gap-4 py-5 border-t border-rule first:border-t-0 first:pt-0"
+                >
+                  <span className="mono text-[13px] text-ink-3 pt-[2px]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <div>
+                    <div className="t-h3 text-ink">{step.title}</div>
+                    <p className="mt-2 t-small max-w-[62ch] text-ink-2">
+                      {step.detail}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+
+        <div className="col-span-12 md:col-span-4 md:border-l md:border-rule md:pl-10 flex flex-col gap-10">
+          <div>
+            <SectionLabel>Parts</SectionLabel>
+            {diagnosis.parts.length === 0 ? (
+              <p className="t-small text-ink-3">None.</p>
+            ) : (
+              <ul className="flex flex-col">
+                {diagnosis.parts.map((p, i) => (
+                  <li key={i} className="py-3 border-t border-rule first:border-t-0 first:pt-0">
                     <div className="text-[14px] font-medium text-ink">
                       {p.name}
                     </div>
-                    <div className="text-[12px] text-ink-soft">{p.note}</div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+                    <div className="t-small text-ink-3 mt-1">{p.note}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-        <Card className="p-6">
-          <SectionTitle icon={<Hammer className="h-4 w-4" />}>Tools</SectionTitle>
-          {diagnosis.tools.length === 0 ? (
-            <p className="text-sm text-stone">No special tools needed.</p>
-          ) : (
-            <ul className="flex flex-wrap gap-2">
-              {diagnosis.tools.map((t, i) => (
-                <li
-                  key={i}
-                  className="rounded-full border border-ink/15 bg-bone-50 px-3 py-1 text-[13px] text-ink-soft"
-                >
-                  {t}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+          <div>
+            <SectionLabel>Tools</SectionLabel>
+            {diagnosis.tools.length === 0 ? (
+              <p className="t-small text-ink-3">None required.</p>
+            ) : (
+              <p className="t-small text-ink-2">
+                {diagnosis.tools.join(", ")}.
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
 
-        <Card className="p-6">
-          <SectionTitle icon={<AlertTriangle className="h-4 w-4" />}>
-            Safety
-          </SectionTitle>
+      {/* Row 5 — Cost comparison + Cautions */}
+      <section className="grid grid-cols-12 gap-6 sm:gap-10">
+        <div className="col-span-12 md:col-span-7">
+          <SectionLabel>04 · Repair vs replace</SectionLabel>
+          <div className="flex flex-col gap-5">
+            <CostLine
+              label="Repair"
+              value={diagnosis.estRepairCostUsd}
+              pct={repairPct}
+              colorClass="bg-v-repair"
+            />
+            <CostLine
+              label="Replace"
+              value={diagnosis.estReplacementCostUsd}
+              pct={replacePct}
+              colorClass="bg-v-replace"
+            />
+          </div>
+          {savings > 0 && (
+            <div className="mono mt-6 inline-flex items-baseline gap-2 text-[12px] tracking-[0.02em] text-ink-2">
+              <span>Savings</span>
+              <span className="text-ink font-medium">
+                {formatCurrency(savings)}
+              </span>
+              <span className="text-ink-3">vs replacement</span>
+            </div>
+          )}
+        </div>
+
+        <div className="col-span-12 md:col-span-5 md:border-l md:border-rule md:pl-10">
+          <SectionLabel>Cautions</SectionLabel>
           {diagnosis.safetyWarnings.length === 0 ? (
-            <p className="text-sm text-stone">
+            <p className="t-small text-ink-3">
               No special hazards — standard care applies.
             </p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="flex flex-col gap-3">
               {diagnosis.safetyWarnings.map((w, i) => (
-                <li
-                  key={i}
-                  className="flex gap-2 text-[13px] leading-relaxed text-ink-soft"
-                >
-                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" />
+                <li key={i} className="grid grid-cols-[1rem_1fr] gap-3 t-small text-ink-2">
+                  <span className="mono text-[11px] text-v-salvage pt-0.5">!</span>
                   <span>{w}</span>
                 </li>
               ))}
             </ul>
           )}
-        </Card>
-      </div>
+        </div>
+      </section>
 
-      {/* Cost comparison + alternative path */}
-      <div className="grid gap-6 md:grid-cols-[1fr_1fr]">
-        <Card className="p-7">
-          <SectionTitle icon={<DollarSign className="h-4 w-4" />}>
-            Repair vs replace
-          </SectionTitle>
-          <div className="grid gap-4">
-            <CostBar
-              label="Estimated repair"
-              value={diagnosis.estRepairCostUsd}
-              max={Math.max(
-                diagnosis.estRepairCostUsd,
-                diagnosis.estReplacementCostUsd,
-                1
-              )}
-              tone="moss"
-            />
-            <CostBar
-              label="Buy replacement"
-              value={diagnosis.estReplacementCostUsd}
-              max={Math.max(
-                diagnosis.estRepairCostUsd,
-                diagnosis.estReplacementCostUsd,
-                1
-              )}
-              tone="rust"
-            />
-          </div>
-          {repairIsCheaper && savings > 0 && (
-            <div className="mt-5 rounded-2xl border border-leaf/30 bg-leaf/5 px-4 py-3 text-sm text-moss">
-              Repairing saves an estimated{" "}
-              <span className="font-semibold">{formatCurrency(savings)}</span>{" "}
-              over buying a replacement.
-            </div>
-          )}
-        </Card>
-
-        <Card className="p-7">
-          <SectionTitle icon={<CheckCircle2 className="h-4 w-4" />}>
-            If this doesn't work
-          </SectionTitle>
-          <div className="serif text-2xl text-ink">
+      {/* Row 6 — If this fails + Disposal */}
+      <section className="grid grid-cols-12 gap-6 sm:gap-10">
+        <div className="col-span-12 md:col-span-6">
+          <SectionLabel>05 · If this fails</SectionLabel>
+          <h4 className="t-h2 text-ink">
             {diagnosis.alternativeAction.title}
-          </div>
-          <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+          </h4>
+          <p className="mt-3 t-body max-w-[58ch] text-ink-2">
             {diagnosis.alternativeAction.detail}
           </p>
-          <div className="mt-5 rounded-2xl border border-ink/10 bg-bone-50 p-4">
-            <div className="mono text-[10px] uppercase tracking-[0.2em] text-stone">
-              Responsible disposal
-            </div>
-            <div className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
-              {diagnosis.disposalGuidance}
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
-        <div className="text-sm text-ink-soft">
-          Save this diagnosis to your repair log or diagnose another item.
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" size="md" onClick={() => shareReport(diagnosis)}>
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
-          <Button variant="moss" size="md" onClick={onReset}>
-            <RotateCcw className="h-4 w-4" />
-            Diagnose another item
-          </Button>
+        <div className="col-span-12 md:col-span-6 md:border-l md:border-rule md:pl-10">
+          <SectionLabel>Disposal</SectionLabel>
+          <p className="t-body max-w-[58ch] text-ink-2">
+            {diagnosis.disposalGuidance}
+          </p>
         </div>
-      </div>
-    </motion.div>
-  );
-}
+      </section>
 
-function SectionTitle({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="mb-4 flex items-center gap-2">
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bone-100 text-ink-soft">
-        {icon}
-      </span>
-      <div className="mono text-[11px] uppercase tracking-[0.2em] text-stone">
-        {children}
+      {/* Row 7 — Actions */}
+      <div className="flex flex-wrap items-center gap-4 rule-t pt-8">
+        <button
+          onClick={onReset}
+          className="inline-flex h-12 items-center gap-2 bg-ink px-5 text-[15px] font-medium text-bg transition-colors hover:bg-forest cursor-pointer"
+        >
+          Diagnose another <span aria-hidden>→</span>
+        </button>
+        <button
+          onClick={() => shareReport(diagnosis)}
+          className="inline-flex h-12 items-center gap-2 border border-rule-strong px-5 text-[15px] text-ink transition-colors hover:border-ink cursor-pointer"
+        >
+          Share result
+        </button>
       </div>
     </div>
   );
 }
 
-function Stat({
-  icon,
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mono mb-5 text-[11px] uppercase tracking-[0.08em] text-ink-3">
+      {children}
+    </div>
+  );
+}
+
+function Meta({
   label,
   value,
+  borderL,
 }: {
-  icon: React.ReactNode;
   label: string;
   value: string;
+  borderL?: boolean;
 }) {
   return (
-    <div>
-      <div className="flex items-center gap-1.5 text-stone">{icon}</div>
-      <div className="mt-2 serif text-xl leading-none text-ink">{value}</div>
-      <div className="mono text-[10px] uppercase tracking-[0.2em] text-stone mt-1.5">
+    <div className={cn("px-4 sm:px-5 py-5", borderL && "sm:border-l sm:border-rule")}>
+      <div className="mono text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
         {label}
       </div>
-    </div>
-  );
-}
-
-function ConfidenceMeter({ value }: { value: number }) {
-  const pct = Math.max(0, Math.min(100, Math.round(value)));
-  return (
-    <div className="flex items-center gap-2">
-      <div className="relative h-1.5 w-24 overflow-hidden rounded-full bg-ink/10">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
-          className="absolute inset-y-0 left-0 bg-leaf"
-        />
-      </div>
-      <div className="mono text-[11px] uppercase tracking-[0.2em] text-stone">
-        {pct}% conf.
+      <div className="mt-1.5 text-[17px] font-medium tracking-[-0.01em] text-ink">
+        {value}
       </div>
     </div>
   );
 }
 
-function CostBar({
+function CostLine({
   label,
   value,
-  max,
-  tone,
+  pct,
+  colorClass,
 }: {
   label: string;
   value: number;
-  max: number;
-  tone: "moss" | "rust";
+  pct: number;
+  colorClass: string;
 }) {
-  const pct = Math.max(6, Math.min(100, (value / max) * 100));
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <div className="text-[13px] text-ink-soft">{label}</div>
-        <div className="serif text-xl text-ink">{formatCurrency(value)}</div>
+        <div className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+          {label}
+        </div>
+        <div className="text-[17px] font-medium tracking-[-0.01em] text-ink">
+          {formatCurrency(value)}
+        </div>
       </div>
-      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/5">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
-          className={cn(
-            "h-full rounded-full",
-            tone === "moss" ? "bg-moss" : "bg-rust"
-          )}
+      <div className="relative mt-2 h-[2px] w-full bg-rule">
+        <div
+          className={cn("absolute left-0 top-0 h-full", colorClass)}
+          style={{ width: `${pct}%` }}
         />
       </div>
     </div>
@@ -482,26 +380,24 @@ function formatNumber(n: number): string {
 }
 
 function formatDate(d: Date): string {
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return d
+    .toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "2-digit" })
+    .replace(/\//g, "·");
 }
 
 async function shareReport(d: Diagnosis) {
-  const text = `Repair Oracle says: ${VERDICT_META[d.verdict as Verdict].label} — "${d.itemName}". ${Math.round(d.environmentalImpact.co2SavedKg)} kg CO₂e saved.`;
+  const text = `Repair Oracle: ${VERDICT_META[d.verdict as Verdict].label} — "${d.itemName}". ${Math.round(d.environmentalImpact.co2SavedKg)} kg CO₂e saved.`;
   if (typeof navigator !== "undefined" && "share" in navigator) {
     try {
       await (navigator as Navigator).share({ title: "Repair Oracle", text });
       return;
     } catch {
-      // fall through to clipboard
+      /* fall through */
     }
   }
   try {
     await navigator.clipboard.writeText(text);
   } catch {
-    // no-op
+    /* no-op */
   }
 }
