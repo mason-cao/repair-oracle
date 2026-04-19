@@ -1,21 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { Trash2, Leaf, Archive } from "lucide-react";
 import {
   clearHistory,
   loadHistory,
   removeHistory,
   type HistoryEntry,
 } from "@/lib/history";
-import {
-  CATEGORIES,
-  VERDICT_META,
-  verdictChipClass,
-  type Verdict,
-} from "@/lib/diagnosis";
+import { CATEGORIES, type Verdict } from "@/lib/diagnosis";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+
+const VERDICT_LABEL_SHORT: Record<Verdict, string> = {
+  repair: "Repair",
+  salvage: "Salvage",
+  recycle: "Recycle",
+  replace: "Replace",
+};
+
+const VERDICT_COLOR: Record<Verdict, string> = {
+  repair: "text-v-repair",
+  salvage: "text-v-salvage",
+  recycle: "text-v-recycle",
+  replace: "text-v-replace",
+};
 
 export function RepairLog({ refreshKey }: { refreshKey: number }) {
   const [entries, setEntries] = React.useState<HistoryEntry[]>([]);
@@ -38,109 +45,117 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
   );
 
   return (
-    <section id="log" className="mx-auto w-full max-w-6xl px-6 py-20 md:px-10">
-      <div className="flex items-end justify-between gap-6">
-        <div>
-          <div className="mono text-[11px] uppercase tracking-[0.22em] text-stone">
-            Your repair log
+    <section
+      id="log"
+      aria-labelledby="log-heading"
+      className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28"
+    >
+      <div className="rule-t pt-10">
+        <div className="flex items-baseline justify-between gap-6">
+          <div>
+            <div className="mono text-[11px] tracking-[0.02em] text-ink-3">
+              <span className="text-ink-2">§ 02</span> · Log
+            </div>
+            <h2 id="log-heading" className="t-h1 mt-3 text-ink">
+              Every repair, remembered.
+            </h2>
+            <p className="mt-4 max-w-[58ch] t-body text-ink-2">
+              Past diagnoses stay on this device. Resume a repair, or watch
+              the landfill you&apos;ve skipped grow.
+            </p>
           </div>
-          <h2 className="serif mt-2 text-4xl text-ink md:text-5xl">
-            Every fix, remembered.
-          </h2>
-          <p className="mt-2 max-w-xl text-[15px] text-ink-soft">
-            Past diagnoses are stored on this device. Come back to resume a
-            repair, or track how much waste you've kept out of the landfill.
-          </p>
+          {entries.length > 0 && (
+            <button
+              onClick={() => {
+                if (confirm("Clear your entire repair log?")) {
+                  clearHistory();
+                  setEntries([]);
+                }
+              }}
+              className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3 transition-colors hover:text-v-replace cursor-pointer"
+            >
+              Clear log
+            </button>
+          )}
         </div>
-        {entries.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              if (confirm("Clear your entire repair log?")) {
-                clearHistory();
-                setEntries([]);
-              }
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-            Clear
-          </Button>
+
+        {entries.length === 0 ? (
+          <div className="mt-16 border border-rule py-20 text-center">
+            <div className="mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+              Empty
+            </div>
+            <div className="t-h3 mt-3 text-ink-2">
+              Diagnose a broken thing above to start your log.
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Totals row */}
+            <div className="mt-10 grid grid-cols-3 rule-t rule-b">
+              <Total label="Items" value={entries.length.toString()} />
+              <Total
+                label="CO₂e saved"
+                value={`${totalCo2.toFixed(1)} kg`}
+                borderL
+              />
+              <Total
+                label="Diverted"
+                value={`${totalLandfill.toFixed(1)} kg`}
+                borderL
+              />
+            </div>
+
+            {/* Table */}
+            <div className="mt-10">
+              <div className="mono hidden sm:grid grid-cols-[88px_1fr_180px_140px_40px] items-baseline gap-4 pb-3 text-[10.5px] uppercase tracking-[0.08em] text-ink-3 rule-b">
+                <span>Date</span>
+                <span>Item</span>
+                <span>Verdict</span>
+                <span className="text-right">CO₂e saved</span>
+                <span />
+              </div>
+              <ul>
+                {entries.map((e) => (
+                  <LogRow
+                    key={e.id}
+                    entry={e}
+                    onRemove={() => {
+                      removeHistory(e.id);
+                      setEntries(loadHistory());
+                    }}
+                  />
+                ))}
+              </ul>
+            </div>
+          </>
         )}
       </div>
-
-      {entries.length === 0 ? (
-        <div className="mt-10 rounded-[28px] border border-dashed border-ink/20 bg-paper/50 p-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-bone-100 text-stone">
-            <Archive className="h-5 w-5" />
-          </div>
-          <div className="serif mt-4 text-xl text-ink">No repairs logged yet</div>
-          <div className="mt-1 text-sm text-stone">
-            Diagnose your first broken item above to start your log.
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <Summary label="Items diagnosed" value={entries.length.toString()} />
-            <Summary
-              label="kg CO₂e saved"
-              value={totalCo2.toFixed(1)}
-              accent
-            />
-            <Summary
-              label="kg diverted"
-              value={totalLandfill.toFixed(1)}
-              accent
-            />
-          </div>
-
-          <ul className="mt-6 grid gap-3 md:grid-cols-2">
-            {entries.map((e) => (
-              <LogCard
-                key={e.id}
-                entry={e}
-                onRemove={() => {
-                  removeHistory(e.id);
-                  setEntries(loadHistory());
-                }}
-              />
-            ))}
-          </ul>
-        </>
-      )}
     </section>
   );
 }
 
-function Summary({
+function Total({
   label,
   value,
-  accent,
+  borderL,
 }: {
   label: string;
   value: string;
-  accent?: boolean;
+  borderL?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-2xl border px-5 py-4",
-        accent ? "border-leaf/30 bg-leaf/5" : "border-ink/10 bg-paper"
-      )}
-    >
-      <div className="mono text-[10px] uppercase tracking-[0.22em] text-stone">
+    <div className={cn("px-4 sm:px-5 py-5", borderL && "border-l border-rule")}>
+      <div className="mono text-[10.5px] uppercase tracking-[0.08em] text-ink-3">
         {label}
       </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <div className="serif text-3xl text-ink">{value}</div>
-        {accent && <Leaf className="h-4 w-4 text-leaf" />}
+      <div className="mt-1.5 text-[17px] font-medium tracking-[-0.01em] text-ink">
+        {value}
       </div>
     </div>
   );
 }
 
-function LogCard({
+function LogRow({
   entry,
   onRemove,
 }: {
@@ -149,52 +164,55 @@ function LogCard({
 }) {
   const cat = CATEGORIES.find((c) => c.id === entry.category);
   const v = entry.diagnosis.verdict as Verdict;
-  const meta = VERDICT_META[v];
+  const co2 = entry.diagnosis.environmentalImpact.co2SavedKg || 0;
   return (
-    <li className="group relative flex gap-4 rounded-2xl border border-ink/10 bg-paper p-4 transition-all hover:border-ink/25">
-      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-bone-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={entry.image}
-          alt={entry.diagnosis.itemName}
-          className="h-full w-full object-cover"
-        />
-      </div>
-      <div className="flex flex-1 flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="mono text-[10px] uppercase tracking-[0.2em] text-stone">
-              {cat?.label ?? "Item"} ·{" "}
-              {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
-            </div>
-            <div className="serif mt-1 text-lg text-ink line-clamp-1">
-              {entry.diagnosis.itemName}
-            </div>
-          </div>
-          <span
-            className={cn(
-              "shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em]",
-              verdictChipClass(v)
-            )}
-          >
-            {meta.label}
-          </span>
+    <li className="group grid grid-cols-[88px_1fr_40px] sm:grid-cols-[88px_1fr_180px_140px_40px] items-center gap-4 border-b border-rule py-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 border border-rule-strong overflow-hidden bg-bg-deep">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={entry.image}
+            alt={entry.diagnosis.itemName}
+            className="h-full w-full object-cover"
+          />
         </div>
-        <p className="mt-1 text-[13px] text-ink-soft line-clamp-2">
-          {entry.diagnosis.verdictReason}
-        </p>
+        <span className="mono text-[11px] tracking-[0.02em] text-ink-3 hidden sm:inline">
+          {formatDateShort(entry.createdAt)}
+        </span>
       </div>
+
+      <div className="min-w-0">
+        <div className="text-[15px] text-ink truncate group-hover:underline underline-offset-4 decoration-1">
+          {entry.diagnosis.itemName}
+        </div>
+        <div className="mono mt-1 text-[10.5px] uppercase tracking-[0.08em] text-ink-3 truncate">
+          {cat?.label ?? "Item"}
+          <span className="sm:hidden"> · {formatDateShort(entry.createdAt)}</span>
+        </div>
+      </div>
+
+      <div className={cn("mono hidden sm:block text-[12px] uppercase tracking-[0.04em]", VERDICT_COLOR[v])}>
+        {VERDICT_LABEL_SHORT[v]}
+      </div>
+
+      <div className="hidden sm:block text-right mono text-[13px] tabular-nums text-ink">
+        {co2.toFixed(1)} kg
+      </div>
+
       <button
         type="button"
         aria-label="Remove from log"
         onClick={onRemove}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-stone opacity-0 transition hover:bg-ink/5 hover:text-ink group-hover:opacity-100"
+        className="mono justify-self-end text-[11px] text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 hover:text-v-replace cursor-pointer"
       >
-        <Trash2 className="h-3.5 w-3.5" />
+        ✕
       </button>
     </li>
   );
+}
+
+function formatDateShort(ts: number): string {
+  return new Date(ts)
+    .toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "2-digit" })
+    .replace(/\//g, "·");
 }
