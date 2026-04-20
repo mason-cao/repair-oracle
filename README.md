@@ -10,21 +10,6 @@ replacement, CO2e avoided, and landfill material diverted.
 
 Built for an Earth Day 2026 hackathon.
 
-## Demo
-
-Run the app, open <http://localhost:3000>, and diagnose one broken object. Good
-demo items are a kettle that will not heat, a torn backpack, a flickering lamp,
-a cracked chair, or headphones with one dead side.
-
-Suggested walkthrough:
-
-1. Start on the hero and call out the live local impact counters.
-2. Upload a clear photo in the diagnosis workspace.
-3. Pick the material family and add a concrete symptom.
-4. Run the diagnosis and review the verdict dossier.
-5. Point to the safety notes, repair economics, environmental ledger, and local
-   repair log.
-
 ## Earth Day Criteria
 
 - **Repair-first impact:** The model is instructed to prefer repair when it is
