@@ -60,7 +60,7 @@ export function Dispatch() {
               <div className="text-sm font-semibold text-mint">
                 Verdict routing
               </div>
-              <div className="mt-1 text-sm text-forest-ink/60">
+              <div className="mt-1 text-sm text-forest-ink/76">
                 A structured path from broken object to lower-waste action.
               </div>
             </div>
@@ -81,7 +81,7 @@ export function Dispatch() {
                     {title}
                   </h3>
                 </div>
-                <p className="mt-4 text-sm leading-6 text-forest-ink/70">
+                <p className="mt-4 text-sm leading-6 text-forest-ink/82">
                   {detail}
                 </p>
                 <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-forest-ink/10">

@@ -162,7 +162,7 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
 function Total({ label, value }: { label: string; value: string }) {
   return (
     <div className="material-tile px-4 py-4">
-      <div className="text-xs font-semibold uppercase text-forest-ink/50">
+      <div className="text-xs font-semibold uppercase text-forest-ink/70">
         {label}
       </div>
       <div className="mt-2 text-2xl font-semibold tabular-nums text-forest-ink">

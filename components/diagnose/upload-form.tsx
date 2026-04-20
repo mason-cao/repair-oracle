@@ -148,7 +148,7 @@ export function UploadForm({
             <ImagePlus className="h-4 w-4 text-mint" />
             Capture bay
           </div>
-          <span className="text-xs font-semibold uppercase text-forest-ink/50">
+          <span className="text-xs font-semibold uppercase text-forest-ink/70">
             JPG PNG HEIC
           </span>
         </div>
@@ -206,7 +206,7 @@ export function UploadForm({
                         className="flex items-center justify-between border-t border-forest-ink/15 pt-2 text-sm"
                       >
                         <span>{step}</span>
-                        <span className="text-forest-ink/60">
+                        <span className="text-forest-ink/76">
                           {i < scanProgress - 1 ? "done" : "active"}
                         </span>
                       </div>
@@ -224,7 +224,7 @@ export function UploadForm({
                 <h3 className="mt-5 text-2xl font-semibold text-forest-ink">
                   Add the broken object.
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-forest-ink/65">
+                <p className="mt-3 text-sm leading-6 text-forest-ink/80">
                   Frame the failure point clearly. The engine uses the image and
                   your note to score repair viability.
                 </p>
@@ -379,7 +379,7 @@ export function UploadForm({
 function StatusCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-4 py-3">
-      <div className="text-[11px] font-semibold uppercase text-forest-ink/40">
+      <div className="text-[11px] font-semibold uppercase text-forest-ink/66">
         {label}
       </div>
       <div className="mt-1 truncate text-sm font-semibold text-forest-ink">

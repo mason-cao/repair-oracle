@@ -94,7 +94,7 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
             <h1 id="hero-heading" className="t-hero mt-7 max-w-[10ch]">
               Repair Oracle
             </h1>
-            <p className="mt-6 max-w-[44rem] text-lg leading-8 text-forest-ink/80">
+            <p className="mt-6 max-w-[44rem] text-lg leading-8 text-forest-ink/90">
               Turn a photo of a broken object into a repair-first verdict:
               fix, salvage, recycle, or replace with costs, safety flags, and a
               quantified material impact ledger.
@@ -164,13 +164,13 @@ function LiveStat({
 }) {
   return (
     <div className="material-tile px-3 py-4 text-forest-ink sm:px-4">
-      <div className="text-xs font-semibold uppercase text-forest-ink/60">
+      <div className="text-xs font-semibold uppercase text-forest-ink/75">
         {label}
       </div>
       <div className="mt-2 text-2xl font-semibold tabular-nums sm:text-3xl">
         {value}
       </div>
-      <div className="mt-1 text-xs text-forest-ink/60">{detail}</div>
+      <div className="mt-1 text-xs text-forest-ink/75">{detail}</div>
     </div>
   );
 }
@@ -183,7 +183,7 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
           <div className="scan-sweep absolute inset-x-0 top-0 h-36" />
 
           <div className="absolute left-5 top-5 rounded-md border border-forest-ink/15 bg-forest-ink/10 px-3 py-2">
-            <div className="text-xs font-semibold uppercase text-forest-ink/50">
+            <div className="text-xs font-semibold uppercase text-forest-ink/70">
               Intake signal
             </div>
             <div className="mt-1 text-sm font-semibold text-forest-ink">
@@ -218,7 +218,7 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
               <div className="text-sm font-semibold text-forest-ink">
                 Verdict matrix
               </div>
-              <div className="text-xs font-semibold uppercase text-forest-ink/50">
+              <div className="text-xs font-semibold uppercase text-forest-ink/70">
                 Four outcomes
               </div>
             </div>
@@ -234,7 +234,7 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
                       <span className="text-sm font-semibold text-forest-ink">
                         {label}
                       </span>
-                      <span className="text-xs text-forest-ink/55">{note}</span>
+                      <span className="text-xs text-forest-ink/72">{note}</span>
                     </div>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-forest-ink/10">
                       <div className={`h-full rounded-full ${bar} ${width}`} />
@@ -264,7 +264,7 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
                 value={totals ? totals.diverted.toFixed(1) : "0.0"}
               />
             </div>
-            <p className="mt-4 text-sm leading-6 text-forest-ink/65">
+            <p className="mt-4 text-sm leading-6 text-forest-ink/80">
               Every verdict carries the Earth Day math: emissions avoided,
               material diverted, and the next responsible path.
             </p>
@@ -284,7 +284,7 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
 function SignalCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="material-tile px-3 py-3">
-      <div className="text-xs font-semibold uppercase text-forest-ink/50">
+      <div className="text-xs font-semibold uppercase text-forest-ink/70">
         {label}
       </div>
       <div className="mt-1 text-sm font-semibold text-forest-ink">{value}</div>
@@ -298,7 +298,7 @@ function LedgerValue({ label, value }: { label: string; value: string }) {
       <div className="text-xl font-semibold tabular-nums text-forest-ink">
         {value}
       </div>
-      <div className="mt-1 text-xs font-semibold uppercase text-forest-ink/50">
+      <div className="mt-1 text-xs font-semibold uppercase text-forest-ink/70">
         {label}
       </div>
     </div>
@@ -308,7 +308,7 @@ function LedgerValue({ label, value }: { label: string; value: string }) {
 function ConsoleCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-4 py-4">
-      <div className="text-[11px] font-semibold uppercase text-forest-ink/45">
+      <div className="text-[11px] font-semibold uppercase text-forest-ink/68">
         {label}
       </div>
       <div className="mt-1 text-sm font-semibold text-forest-ink">{value}</div>

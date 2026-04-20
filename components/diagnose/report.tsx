@@ -105,7 +105,7 @@ export function Report({
             <VerdictIcon className={`h-4 w-4 ${tone.text}`} />
             Verdict dossier
           </div>
-          <div className="text-sm text-forest-ink/60">{formatDate(new Date())}</div>
+          <div className="text-sm text-forest-ink/76">{formatDate(new Date())}</div>
         </div>
 
         <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
@@ -117,7 +117,7 @@ export function Report({
               className="h-full min-h-[340px] w-full object-cover opacity-90"
             />
             <div className="absolute inset-x-4 bottom-4 rounded-md border border-forest-ink/15 bg-bg-contrast/58 p-3 text-forest-ink backdrop-blur-xl">
-              <div className="text-xs font-semibold uppercase text-forest-ink/50">
+              <div className="text-xs font-semibold uppercase text-forest-ink/70">
                 {cat?.label ?? "Item"}
               </div>
               <figcaption className="mt-1 text-sm font-semibold">
@@ -139,7 +139,7 @@ export function Report({
                 <VerdictIcon className="h-4 w-4" />
                 {tone.label}
               </div>
-              <div className="text-right text-sm text-forest-ink/55">
+              <div className="text-right text-sm text-forest-ink/72">
                 <div className="text-xl font-semibold tabular-nums text-forest-ink">
                   {Math.round(diagnosis.confidence)}
                 </div>
@@ -150,7 +150,7 @@ export function Report({
             <h3 className="t-display verdict-in mt-8 text-forest-ink">
               {diagnosis.itemName}
             </h3>
-            <p className="mt-5 max-w-[48rem] text-base leading-7 text-forest-ink/75">
+            <p className="mt-5 max-w-[48rem] text-base leading-7 text-forest-ink/88">
               {diagnosis.verdictReason}
             </p>
 
@@ -182,7 +182,7 @@ export function Report({
                 <span className="font-semibold text-forest-ink">
                   {VERDICT_META[diagnosis.verdict].tagline}
                 </span>
-                <span className="text-forest-ink/50">
+                <span className="text-forest-ink/70">
                   {Math.round(diagnosis.confidence)}/100
                 </span>
               </div>
@@ -225,7 +225,7 @@ export function Report({
               label="kg material diverted"
             />
           </div>
-          <p className="mt-5 text-sm leading-6 text-forest-ink/70">
+          <p className="mt-5 text-sm leading-6 text-forest-ink/82">
             {diagnosis.environmentalImpact.note}
           </p>
         </div>
@@ -414,7 +414,7 @@ function DossierMetric({
   return (
     <div className="material-tile p-3">
       <div className="flex items-center justify-between gap-3">
-        <div className="text-[11px] font-semibold uppercase text-forest-ink/50">
+        <div className="text-[11px] font-semibold uppercase text-forest-ink/70">
           {label}
         </div>
         <Icon className="h-4 w-4 text-mint" />
@@ -432,7 +432,7 @@ function ImpactNumber({ value, label }: { value: string; label: string }) {
       <div className="text-3xl font-semibold tabular-nums text-forest-ink">
         {value}
       </div>
-      <div className="mt-2 text-xs font-semibold uppercase text-forest-ink/50">
+      <div className="mt-2 text-xs font-semibold uppercase text-forest-ink/70">
         {label}
       </div>
     </div>

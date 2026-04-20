@@ -31,6 +31,14 @@ Rules:
 
 export async function POST(req: NextRequest) {
   try {
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return NextResponse.json(
+        { error: "Use multipart form data with an image upload." },
+        { status: 400 }
+      );
+    }
+
     const form = await req.formData();
     const image = form.get("image");
     const category = String(form.get("category") || "other");
