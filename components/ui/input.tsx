@@ -12,7 +12,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className={cn(
         "w-full rounded-md text-[15px] text-ink placeholder:text-ink-3 focus:outline-none transition-colors duration-150",
         variant === "bordered" &&
-          "h-11 border border-rule bg-bg-raised/75 px-3 shadow-[inset_0_1px_0_rgba(246,242,231,0.12)] focus:border-forest",
+          "h-11 border border-rule bg-bg-raised/45 px-3 shadow-[inset_0_1px_0_rgba(246,242,231,0.12)] backdrop-blur-md focus:border-forest",
         variant === "rule" &&
           "h-11 rounded-none bg-transparent border-b border-rule-strong px-0 focus:border-forest",
         className
@@ -34,7 +34,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       className={cn(
         "w-full rounded-md text-[15px] text-ink placeholder:text-ink-3 focus:outline-none resize-none transition-colors duration-150",
         variant === "bordered" &&
-          "min-h-[112px] border border-rule bg-bg-raised/75 px-3 py-3 shadow-[inset_0_1px_0_rgba(246,242,231,0.12)] focus:border-forest",
+          "min-h-[112px] border border-rule bg-bg-raised/45 px-3 py-3 shadow-[inset_0_1px_0_rgba(246,242,231,0.12)] backdrop-blur-md focus:border-forest",
         variant === "rule" &&
           "min-h-[112px] rounded-none bg-transparent border-b border-rule-strong px-0 py-2 focus:border-forest",
         className

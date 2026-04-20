@@ -1,4 +1,4 @@
-import { Leaf, ShieldCheck } from "lucide-react";
+import { Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 
 export function Footer() {
@@ -14,11 +14,15 @@ export function Footer() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-ink-3">
-          <span className="inline-flex items-center gap-2 rounded-md border border-rule bg-bg-raised/70 px-3 py-2">
+          <span className="glass-chip inline-flex items-center gap-2 rounded-md px-3 py-2">
             <Leaf className="h-4 w-4 text-forest" />
             Earth Day 2026
           </span>
-          <span className="inline-flex items-center gap-2 rounded-md border border-rule bg-bg-raised/70 px-3 py-2">
+          <span className="glass-chip inline-flex items-center gap-2 rounded-md px-3 py-2">
+            <Sparkles className="h-4 w-4 text-forest" />
+            Google Gemini
+          </span>
+          <span className="glass-chip inline-flex items-center gap-2 rounded-md px-3 py-2">
             <ShieldCheck className="h-4 w-4 text-forest" />
             Privacy-first
           </span>

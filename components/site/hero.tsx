@@ -87,17 +87,17 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
       <div className="grid w-full items-stretch gap-6 lg:grid-cols-[0.72fr_1.28fr] xl:gap-8">
         <div className="command-panel flex min-h-[580px] flex-col justify-between p-5 sm:p-7 xl:min-h-[720px]">
           <div className="rise">
-            <div className="inline-flex items-center gap-2 rounded-md border border-forest-ink/15 bg-forest-ink/10 px-3 py-2 text-sm font-semibold text-mint">
-              <Leaf className="h-4 w-4" />
-              Circular repair intelligence
+            <div className="glass-chip inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-mint">
+              <Sparkles className="h-4 w-4" />
+              Gemini vision repair intelligence
             </div>
             <h1 id="hero-heading" className="t-hero mt-7 max-w-[10ch]">
               Repair Oracle
             </h1>
             <p className="mt-6 max-w-[44rem] text-lg leading-8 text-forest-ink/80">
-              Diagnose the useful life left inside a broken object. Repair,
-              salvage, recycle, or replace with a structured plan and a clear
-              material impact ledger.
+              Turn a photo of a broken object into a repair-first verdict:
+              fix, salvage, recycle, or replace with costs, safety flags, and a
+              quantified material impact ledger.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
@@ -140,10 +140,10 @@ export function Hero({ refreshKey = 0 }: { refreshKey?: number }) {
           <div className="flex items-center justify-between border-b border-forest-ink/15 px-4 py-3 sm:px-5">
             <div className="flex items-center gap-2 text-sm font-semibold text-forest-ink">
               <ScanLine className="h-4 w-4 text-mint" />
-              Live Verdict Console
+              Gemini Verdict Console
             </div>
             <div className="rounded-sm border border-mint/25 bg-mint/10 px-2 py-1 text-xs font-semibold text-mint">
-              Engine ready
+              Vision model ready
             </div>
           </div>
           <RepairConsoleVisual totals={totals} />
@@ -265,17 +265,17 @@ function RepairConsoleVisual({ totals }: { totals: Totals | null }) {
               />
             </div>
             <p className="mt-4 text-sm leading-6 text-forest-ink/65">
-              Impact is not a separate report card; it is part of the decision
-              model for every verdict.
+              Every verdict carries the Earth Day math: emissions avoided,
+              material diverted, and the next responsible path.
             </p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-3 border-t border-forest-ink/15">
-        <ConsoleCell label="Input" value="Image and symptom" />
-        <ConsoleCell label="Reasoning" value="Viability scoring" />
-        <ConsoleCell label="Output" value="Action plan" />
+        <ConsoleCell label="Input" value="Gemini vision" />
+        <ConsoleCell label="Reasoning" value="Structured schema" />
+        <ConsoleCell label="Output" value="Impact ledger" />
       </div>
     </div>
   );

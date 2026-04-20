@@ -1,4 +1,4 @@
-import { Leaf, Recycle, ShieldCheck, Wrench } from "lucide-react";
+import { Leaf, Recycle, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 
 const VERDICT_MODEL = [
   {
@@ -42,15 +42,15 @@ export function Dispatch() {
         <div className="surface-panel p-5 sm:p-6">
           <div className="section-kicker">
             <Leaf className="h-4 w-4" />
-            Operating model
+            Build for the Planet
           </div>
           <h2 id="dispatch-heading" className="t-h1 mt-5 max-w-[13ch] text-ink">
-            Repair-first, safety-aware.
+            Repair-first, Gemini-grounded.
           </h2>
           <p className="mt-5 max-w-[38rem] text-base leading-7 text-ink-2">
-            Repair Oracle treats environmental impact as part of the decision,
-            not a decorative stat. Each diagnosis balances viability, risk,
-            cost, parts, and material responsibility.
+            Repair Oracle treats environmental impact as part of the verdict,
+            not a decorative stat. Each diagnosis balances visual evidence,
+            safety, parts, cost, and material responsibility.
           </p>
         </div>
 
@@ -61,11 +61,12 @@ export function Dispatch() {
                 Verdict routing
               </div>
               <div className="mt-1 text-sm text-forest-ink/60">
-                A structured path from broken object to next action.
+                A structured path from broken object to lower-waste action.
               </div>
             </div>
-            <div className="rounded-md border border-forest-ink/15 bg-forest-ink/10 px-3 py-2 text-sm font-semibold text-forest-ink">
-              Four outcomes
+            <div className="glass-chip inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-forest-ink">
+              <Sparkles className="h-4 w-4 text-mint" />
+              Gemini 2.5 Flash
             </div>
           </div>
 
@@ -93,9 +94,9 @@ export function Dispatch() {
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-3">
-        <ProofPoint label="Structured output" value="13 fields" />
-        <ProofPoint label="Decision path" value="4 verdicts" />
-        <ProofPoint label="Local memory" value="On-device log" />
+        <ProofPoint label="Prize technology" value="Google Gemini" />
+        <ProofPoint label="Structured output" value="13-field schema" />
+        <ProofPoint label="Planet ledger" value="Local impact totals" />
       </div>
     </section>
   );

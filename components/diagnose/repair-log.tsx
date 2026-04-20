@@ -126,14 +126,14 @@ export function RepairLog({ refreshKey }: { refreshKey: number }) {
                   setEntries([]);
                 }
               }}
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-rule bg-bg-raised px-3 text-sm font-semibold text-ink-2 hover:border-v-replace hover:text-v-replace"
+              className="glass-chip inline-flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-semibold text-ink-2 hover:border-v-replace hover:text-v-replace"
             >
               <Trash2 className="h-4 w-4" />
               Clear
             </button>
           </div>
 
-          <div className="hidden grid-cols-[96px_1fr_170px_140px_56px] gap-4 border-b border-rule bg-bg/70 px-4 py-3 text-xs font-semibold uppercase text-ink-3 sm:grid sm:px-5">
+          <div className="hidden grid-cols-[96px_1fr_170px_140px_56px] gap-4 border-b border-rule bg-bg/35 px-4 py-3 text-xs font-semibold uppercase text-ink-3 backdrop-blur-md sm:grid sm:px-5">
             <span>Date</span>
             <span>Item</span>
             <span>Verdict</span>

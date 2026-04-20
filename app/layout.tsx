@@ -24,12 +24,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Repair Oracle — A diagnostic for broken things",
+  title: "Repair Oracle — Gemini repair intelligence for broken things",
   description:
-    "Photograph a broken object. Get a verdict: repair, salvage, recycle, or replace — with the steps, parts, cost, and the landfill you skip.",
+    "Photograph a broken object. Get a Gemini-grounded verdict: repair, salvage, recycle, or replace — with steps, parts, cost, safety flags, and the landfill you skip.",
   openGraph: {
     title: "Repair Oracle",
-    description: "A diagnostic for broken things.",
+    description: "Gemini repair intelligence for lower-waste decisions.",
     type: "website",
   },
   metadataBase: new URL("https://repair-oracle.local"),

@@ -116,7 +116,7 @@ export function Report({
               alt={diagnosis.itemName}
               className="h-full min-h-[340px] w-full object-cover opacity-90"
             />
-            <div className="absolute inset-x-4 bottom-4 rounded-md border border-forest-ink/15 bg-bg-contrast/80 p-3 text-forest-ink backdrop-blur">
+            <div className="absolute inset-x-4 bottom-4 rounded-md border border-forest-ink/15 bg-bg-contrast/58 p-3 text-forest-ink backdrop-blur-xl">
               <div className="text-xs font-semibold uppercase text-forest-ink/50">
                 {cat?.label ?? "Item"}
               </div>
@@ -203,7 +203,7 @@ export function Report({
           <p className="text-base leading-7 text-ink-2">
             {diagnosis.observed}
           </p>
-          <blockquote className="mt-6 rounded-md border border-rule bg-bg-raised/70 px-4 py-3 text-sm leading-6 text-ink-2">
+          <blockquote className="glass-card mt-6 rounded-md px-4 py-3 text-sm leading-6 text-ink-2">
             “{symptom}”
             <div className="mt-2 text-xs font-semibold uppercase text-ink-3">
               Your note

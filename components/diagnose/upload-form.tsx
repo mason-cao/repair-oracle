@@ -287,7 +287,7 @@ export function UploadForm({
               material-impact recommendations.
             </p>
           </div>
-          <div className="rounded-sm border border-rule bg-bg-raised px-2 py-1 text-xs font-semibold text-ink-3">
+          <div className="glass-chip rounded-sm px-2 py-1 text-xs font-semibold text-ink-3">
             {stage.toUpperCase()}
           </div>
         </div>
@@ -305,7 +305,7 @@ export function UploadForm({
                     "min-h-11 rounded-md border px-3 py-2 text-left text-sm font-semibold",
                     category === c.id
                       ? "border-forest bg-forest text-bg-contrast shadow-[0_10px_28px_rgba(7,19,15,0.16)]"
-                      : "border-rule bg-bg-raised/75 text-ink-2 hover:border-rule-strong hover:bg-bg-raised hover:text-ink"
+                      : "border-rule bg-bg-raised/40 text-ink-2 backdrop-blur-md hover:border-rule-strong hover:bg-bg-raised/55 hover:text-ink"
                   )}
                 >
                   {c.label}
