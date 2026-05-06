@@ -10,6 +10,7 @@ replacement, CO2e avoided, and landfill material diverted.
 
 Built for an Earth Day 2026 hackathon.
 
+[Video Demo](https://youtu.be/yPyhUS4Dd4g)
 ## Earth Day Criteria
 
 - **Repair-first impact:** The model is instructed to prefer repair when it is
